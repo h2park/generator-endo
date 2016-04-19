@@ -39,7 +39,7 @@ class OctobluServiceGenerator extends yeoman.Base
 
     done = @async()
 
-    @githubUserInfo @githubUser, (err, res) =>
+    helpers.githubUserInfo @githubUser, (err, res) =>
       @realname = res.name
       @email = res.email
       @githubUrl = res.html_url
