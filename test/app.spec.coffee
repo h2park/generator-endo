@@ -1,6 +1,4 @@
 path = require 'path'
-fs = require 'fs'
-{exec} = require 'child_process'
 helpers = require('yeoman-test')
 assert = require('yeoman-assert')
 
@@ -8,7 +6,7 @@ GENERATOR_NAME = 'app'
 DEST = path.join __dirname, '..', 'temp', "generator-#{GENERATOR_NAME}"
 
 describe 'app', ->
-  beforeEach 'run the helper', (done) ->
+  before 'run the helper', (done) ->
     helpers
       .run path.join __dirname, '..', 'app'
       .inDir DEST
@@ -18,6 +16,7 @@ describe 'app', ->
       .withPrompts
         githubUser: 'alexgorbatchev'
         generatorName: GENERATOR_NAME
+        passportName: 'passport-app'
       .on 'end', done
 
   it 'creates expected files', ->
