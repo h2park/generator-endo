@@ -1,11 +1,15 @@
-<%= controllerClass %> = require './controllers/<%= filePrefix %>-controller'
+passport = require 'passport'
+<%= classPrefix %>Controller = require './controllers/<%= filePrefix %>-controller'
 
 class Router
-  constructor: ({@<%= serviceInstance %>}) ->
-  route: (app) =>
-    <%= controllerInstance %> = new <%= controllerClass %> {@<%= serviceInstance %>}
+  constructor: () ->
+    @<%= instancePrefix %>Controller = new <%= classPrefix %>Controller
 
-    app.get '/hello', <%= controllerInstance %>.hello
-    # e.g. app.put '/resource/:id', someController.update
+  route: (app) =>
+    app.get '/auth', passport.authenticate('<%= instancePrefix %>')
+
+    app.get '/auth/callback',
+      passport.authenticate('<%= instancePrefix %>', failureRedirect: '/login'),
+      @<%= instancePrefix %>Controller.authenticated
 
 module.exports = Router

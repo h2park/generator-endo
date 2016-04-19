@@ -8,7 +8,6 @@ meshbluAuth        = require 'express-meshblu-auth'
 MeshbluConfig      = require 'meshblu-config'
 debug              = require('debug')('<%= appname %>:server')
 Router             = require './router'
-<%= serviceClass %> = require './services/<%= filePrefix %>-service'
 
 class Server
   constructor: ({@disableLogging, @port}, {@meshbluConfig})->
@@ -29,8 +28,7 @@ class Server
 
     app.options '*', cors()
 
-    <%= serviceInstance %> = new <%= serviceClass %>
-    router = new Router {@meshbluConfig, <%= serviceInstance %>}
+    router = new Router {@meshbluConfig}
 
     router.route app
 

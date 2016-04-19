@@ -25,7 +25,6 @@ describe 'app', ->
       src/server.coffee
       src/router.coffee
       src/controllers/app-controller.coffee
-      src/services/app-service.coffee
       index.js
       command.js
       command.coffee

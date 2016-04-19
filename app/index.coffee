@@ -52,26 +52,17 @@ class OctobluServiceGenerator extends yeoman.Base
     instancePrefix = _.camelCase nameWithoutEndo
     classPrefix = _.upperFirst instancePrefix
 
-    serviceClass    = "#{classPrefix}Service"
-    serviceInstance = "#{instancePrefix}Service"
-
-    controllerClass = "#{classPrefix}Controller"
-    controllerInstance = "#{instancePrefix}Controller"
-
     context = {
       @githubUrl
       @realname
       @appname
       filePrefix
-      serviceClass
-      serviceInstance
-      controllerClass
-      controllerInstance
+      classPrefix
+      instancePrefix
     }
     @template "_package.json", "package.json", context
     @template "src/_server.coffee", "src/server.coffee", context
     @template "src/_router.coffee", "src/router.coffee", context
-    @template "src/services/_service.coffee", "src/services/#{filePrefix}-service.coffee", context
     @template "src/controllers/_controller.coffee", "src/controllers/#{filePrefix}-controller.coffee", context
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
@@ -88,5 +79,8 @@ class OctobluServiceGenerator extends yeoman.Base
   install: =>
     return if @skipInstall
     @installDependencies()
+
+  end: =>
+    @log "You're probably going to want to run npm -i passport-#{_.trimStart @appname, 'endo-'}"
 
 module.exports = OctobluServiceGenerator
