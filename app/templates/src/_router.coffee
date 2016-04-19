@@ -1,15 +1,20 @@
-passport = require 'passport'
+MeshbluAuth = require 'express-meshblu-auth'
+passport    = require 'passport'
 <%= classPrefix %>Controller = require './controllers/<%= filePrefix %>-controller'
 
 class Router
-  constructor: () ->
+  constructor: ({@meshbluConfig}) ->
     @<%= instancePrefix %>Controller = new <%= classPrefix %>Controller
 
   route: (app) =>
-    app.get '/auth', passport.authenticate('<%= instancePrefix %>')
+    meshbluAuth = new MeshbluAuth @meshbluConfig
 
-    app.get '/auth/callback',
-      passport.authenticate('<%= instancePrefix %>', failureRedirect: '/login'),
-      @<%= instancePrefix %>Controller.authenticated
+    app.use meshbluAuth.retrieve()
+    app.get '/auth/octoblu', passport.authenticate('octoblu')
+    app.get '/auth/octoblu/callback', passport.authenticate('octoblu', failureRedirect: '/login', successRedirect: '/auth/twitter')
+    app.use meshbluAuth.gatewayRedirect('/auth/octoblu')
+
+    app.get '/auth/<%= instancePrefix %>', passport.authenticate('<%= instancePrefix %>')
+    app.get '/auth/<%= instancePrefix %>/callback', passport.authenticate('<%= instancePrefix %>', failureRedirect: '/login'), @<%= instancePrefix %>Controller.authenticated
 
 module.exports = Router

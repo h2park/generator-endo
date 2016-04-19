@@ -25,6 +25,7 @@ describe 'app', ->
       src/server.coffee
       src/router.coffee
       src/controllers/app-controller.coffee
+      src/controllers/octoblu-auth-controller.coffee
       index.js
       command.js
       command.coffee

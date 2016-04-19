@@ -10,14 +10,17 @@ describe 'Sample Spec', ->
     serverOptions =
       port: undefined,
       disableLogging: true
+      octobluOauthOptions:
+        clientID: '12345'
+        clientSecret: '12345'
+      meshbluConfig:
+        server: 'localhost'
+        port: 0xd00d
 
-    meshbluConfig =
-      server: 'localhost'
-      port: 0xd00d
+    @server = new Server serverOptions
 
-    @server = new Server serverOptions, {meshbluConfig}
-
-    @server.run =>
+    @server.run (error) =>
+      return done error if error?
       @serverPort = @server.address().port
       done()
 
@@ -27,7 +30,45 @@ describe 'Sample Spec', ->
   afterEach (done) ->
     @meshblu.close done
 
-  describe 'On GET /hello', ->
+  describe 'When inauthenticated', ->
+    describe 'On GET /', ->
+      beforeEach (done) ->
+        options =
+          baseUrl: "http://localhost:#{@serverPort}"
+          followRedirect: false
+
+        request.get '/', options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 302', ->
+        expect(@response.statusCode).to.equal 302, @body
+
+      it 'should redirect to /auth/octoblu', ->
+        expect(@response.headers.location).to.equal '/auth/octoblu'
+
+    describe 'On GET /auth/octoblu', ->
+      beforeEach (done) ->
+        options =
+          baseUrl: "http://localhost:#{@serverPort}"
+          followRedirect: false
+
+        request.get '/auth/octoblu', options, (error, @response, @body) =>
+          done error
+
+      it 'should redirect to /auth/octoblu', ->
+        expect(@response.statusCode).to.equal 302, @body
+
+  xdescribe 'When unauthenticated', ->
+    describe 'On GET /', ->
+      beforeEach (done) ->
+        request.get "http://localhost:#{@serverPort}", followRedirect: false, (error, @response, @body) =>
+          done error
+
+      it 'should redirect to /auth/octoblu', ->
+        expect(@response.statusCode).to.equal 302, @body
+
+
+  xdescribe 'On GET /auth/twitter', ->
     beforeEach (done) ->
       userAuth = new Buffer('some-uuid:some-token').toString 'base64'
 
@@ -53,7 +94,7 @@ describe 'Sample Spec', ->
     it 'should return a 200', ->
       expect(@response.statusCode).to.equal 200
 
-  describe 'when the service yields an error', ->
+  xdescribe 'when the service yields an error', ->
     beforeEach (done) ->
       userAuth = new Buffer('some-uuid:some-token').toString 'base64'
 
