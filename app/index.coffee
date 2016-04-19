@@ -14,24 +14,22 @@ class OctobluServiceGenerator extends yeoman.Base
     @skipInstall = options['skip-install']
     @pkg = JSON.parse htmlWiring.readFileAsString path.join __dirname, '../package.json'
 
-  prompting: ->
+  initializing: =>
+    @appname = _.kebabCase @appname
+    @env.error 'appname must start with "endo-", exiting.' unless _.startsWith @appname, 'endo-'
+
+  prompting: =>
     # have Yeoman greet the user.
     done = @async()
-    generatorName = helpers.extractGeneratorName @appname
 
     prompts = [
       name: 'githubUser'
       message: 'Would you mind telling me your username on GitHub?'
       default: 'octoblu'
-    ,
-      name: 'generatorName'
-      message: "What's the base name of your generator?"
-      default: generatorName
     ]
 
     @prompt prompts, (props) =>
       @githubUser = props.githubUser
-      @generatorName = props.generatorName
       done()
 
   userInfo: =>
@@ -49,10 +47,9 @@ class OctobluServiceGenerator extends yeoman.Base
     @copy '_gitignore', '.gitignore'
 
   writing: =>
-    appName = _.kebabCase @generatorName
-    generatorNameWithoutService = _.trimEnd @generatorName, '-service'
-    filePrefix = _.kebabCase generatorNameWithoutService
-    instancePrefix = _.camelCase generatorNameWithoutService
+    nameWithoutEndo = _.trimStart @appname, 'endo-'
+    filePrefix = _.kebabCase nameWithoutEndo
+    instancePrefix = _.camelCase nameWithoutEndo
     classPrefix = _.upperFirst instancePrefix
 
     serviceClass    = "#{classPrefix}Service"
@@ -64,12 +61,12 @@ class OctobluServiceGenerator extends yeoman.Base
     context = {
       @githubUrl
       @realname
+      @appname
       filePrefix
       serviceClass
       serviceInstance
       controllerClass
       controllerInstance
-      appName
     }
     @template "_package.json", "package.json", context
     @template "src/_server.coffee", "src/server.coffee", context
@@ -78,8 +75,7 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "src/controllers/_controller.coffee", "src/controllers/#{filePrefix}-controller.coffee", context
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
-    @template "test/integration/_sample-integration-spec.coffee", "test/integration/#{filePrefix}-integration-spec.coffee", context
-    @template "test/integration/_hello-spec.coffee", "test/integration/#{filePrefix}-hello-spec.coffee", context
+    @template "test/integration/_sample-spec.coffee", "test/integration/#{filePrefix}-spec.coffee", context
     @template "_index.js", "index.js", context
     @template "_command.js", "command.js", context
     @template "_command.coffee", "command.coffee", context

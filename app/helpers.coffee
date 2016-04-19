@@ -2,7 +2,7 @@ GitHubApi  = require 'github'
 _          = require 'lodash'
 
 class Helpers
-  extractGeneratorName: (appName) =>
+  extractEndoName: (appName) =>
     _.kebabCase appName
 
   githubUserInfo: (user, callback) =>

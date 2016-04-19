@@ -6,7 +6,7 @@ errorHandler       = require 'errorhandler'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
 meshbluAuth        = require 'express-meshblu-auth'
 MeshbluConfig      = require 'meshblu-config'
-debug              = require('debug')('<%= appName %>:server')
+debug              = require('debug')('<%= appname %>:server')
 Router             = require './router'
 <%= serviceClass %> = require './services/<%= filePrefix %>-service'
 

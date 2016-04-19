@@ -3,7 +3,7 @@ request = require 'request'
 shmock  = require '@octoblu/shmock'
 Server  = require '../../src/server'
 
-describe 'Hello', ->
+describe 'Sample Spec', ->
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
 

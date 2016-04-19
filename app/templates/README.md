@@ -1,15 +1,15 @@
-# <%= appName %>
+# <%= appname %>
 
-[![Dependency status](http://img.shields.io/david/octoblu/<%= appName %>.svg?style=flat)](https://david-dm.org/octoblu/<%= appName %>)
-[![devDependency Status](http://img.shields.io/david/dev/octoblu/<%= appName %>.svg?style=flat)](https://david-dm.org/octoblu/<%= appName %>#info=devDependencies)
-[![Build Status](http://img.shields.io/travis/octoblu/<%= appName %>.svg?style=flat&branch=master)](https://travis-ci.org/octoblu/<%= appName %>)
+[![Dependency status](http://img.shields.io/david/octoblu/<%= appname %>.svg?style=flat)](https://david-dm.org/octoblu/<%= appname %>)
+[![devDependency Status](http://img.shields.io/david/dev/octoblu/<%= appname %>.svg?style=flat)](https://david-dm.org/octoblu/<%= appname %>#info=devDependencies)
+[![Build Status](http://img.shields.io/travis/octoblu/<%= appname %>.svg?style=flat&branch=master)](https://travis-ci.org/octoblu/<%= appname %>)
 
-[![NPM](https://nodei.co/npm/<%= appName %>.svg?style=flat)](https://npmjs.org/package/<%= appName %>)
+[![NPM](https://nodei.co/npm/<%= appname %>.svg?style=flat)](https://npmjs.org/package/<%= appname %>)
 
 ## Installing
 
 ```bash
-$ npm install <%= appName %>
+$ npm install <%= appname %>
 ```
 
 ### Usage
