@@ -41,7 +41,8 @@ class OctobluServiceGenerator extends yeoman.Base
 
     done = @async()
 
-    helpers.githubUserInfo @githubUser, (err, res) =>
+    helpers.githubUserInfo @githubUser, (error, res) =>
+      @env.error error if error?
       @realname = res.name
       @email = res.email
       @githubUrl = res.html_url
@@ -51,9 +52,9 @@ class OctobluServiceGenerator extends yeoman.Base
     @copy '_gitignore', '.gitignore'
 
   writing: =>
-    filePrefix = _.kebabCase @noEndo
+    filePrefix     = _.kebabCase @noEndo
     instancePrefix = _.camelCase @noEndo
-    classPrefix = _.upperFirst instancePrefix
+    classPrefix    = _.upperFirst instancePrefix
     constantPrefix = _.toUpper _.snakeCase @noEndo
 
     context = {
@@ -72,10 +73,12 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "src/controllers/_octoblu-auth-controller.coffee", "src/controllers/octoblu-auth-controller.coffee", context
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
+    @template "test/_mock-strategy.coffee", "test/mock-strategy.coffee", context
     @template "test/integration/_sample-spec.coffee", "test/integration/#{filePrefix}-spec.coffee", context
     @template "_index.js", "index.js", context
     @template "_command.js", "command.js", context
     @template "_command.coffee", "command.coffee", context
+    @template "_coffeelint.json", "coffeelint.json", context
     @template "_travis.yml", ".travis.yml", context
     @template "_Dockerfile", "Dockerfile", context
     @template "_dockerignore", ".dockerignore", context
@@ -85,12 +88,11 @@ class OctobluServiceGenerator extends yeoman.Base
   install: =>
     return if @skipInstall
 
-    done = @async()
-
-    @installDependencies bower: false, =>
-      @npmInstall "passport-#{@noEndo}", save: true, done
+    @installDependencies npm: true, bower: false
+    @npmInstall "passport-#{@noEndo}", save: true
 
   end: =>
-    @log "\nYou're probably going to want to run 'npm install --save passport-#{@noEndo}'. Unless I already did that for you\n"
+    return if @skipInstall
+    @log "\nBy the way, I installed 'passport-#{@noEndo}', so if that's not right, you should fix it.\n"
 
 module.exports = OctobluServiceGenerator

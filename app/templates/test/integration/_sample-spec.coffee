@@ -1,12 +1,15 @@
-http    = require 'http'
-request = require 'request'
-shmock  = require '@octoblu/shmock'
-Server  = require '../../src/server'
+http         = require 'http'
+request      = require 'request'
+shmock       = require '@octoblu/shmock'
+MockStrategy = require '../mock-strategy'
+Server       = require '../../src/server'
 
 describe 'Sample Spec', ->
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
     @oauth = shmock 0xcafe
+
+    @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
 
     serverOptions =
       port: undefined,
@@ -20,9 +23,11 @@ describe 'Sample Spec', ->
         meshbluConfig:
           server: 'localhost'
           port: 0xd00d
+      apiStrategy: @apiStrategy
       meshbluConfig:
         server: 'localhost'
         port: 0xd00d
+        token: 'peter'
 
     @server = new Server serverOptions
 
@@ -69,7 +74,9 @@ describe 'Sample Spec', ->
         expect(@response.statusCode).to.equal 302, @body
 
       it 'should redirect to oauth.octoblu.xxx/authorize', ->
-        expect(@response.headers.location).to.equal 'http://oauth.octoblu.xxx/authorize?response_type=code&client_id=client-id'
+        expect(@response.headers.location).to.equal(
+          'http://oauth.octoblu.xxx/authorize?response_type=code&client_id=client-id'
+        )
 
     describe 'On GET /auth/octoblu/callback with a valid code', ->
       beforeEach (done) ->
@@ -108,7 +115,7 @@ describe 'Sample Spec', ->
       it 'should set the meshblu auth cookies', ->
         expect(@response.headers['set-cookie']).to.contain 'meshblu_auth_bearer=dTp0Mg%3D%3D; Path=/'
 
-  describe 'On GET /auth/twitter', ->
+  describe 'On GET /auth/<%= instancePrefix %>', ->
     beforeEach (done) ->
       userAuth = new Buffer('some-uuid:some-token').toString 'base64'
 
@@ -118,7 +125,7 @@ describe 'Sample Spec', ->
         .reply 200, uuid: 'some-uuid', token: 'some-token'
 
       options =
-        uri: '/hello'
+        uri: '/auth/<%= instancePrefix %>'
         baseUrl: "http://localhost:#{@serverPort}"
         auth:
           username: 'some-uuid'
@@ -131,7 +138,7 @@ describe 'Sample Spec', ->
     it 'should auth handler', ->
       @authDevice.done()
 
-    xit 'should return a 302', ->
+    it 'should return a 302', ->
       expect(@response.statusCode).to.equal 302
 
   xdescribe 'when the service yields an error', ->

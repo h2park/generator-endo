@@ -26,9 +26,14 @@ describe 'app', ->
       src/router.coffee
       src/controllers/app-controller.coffee
       src/controllers/octoblu-auth-controller.coffee
+      test/integration/app-spec.coffee
+      test/mock-strategy.coffee
+      test/test_helper.coffee
+      test/mocha.opts
       index.js
       command.js
       command.coffee
+      coffeelint.json
       .gitignore
       .travis.yml
       LICENSE
