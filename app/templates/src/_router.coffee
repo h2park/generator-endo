@@ -11,14 +11,15 @@ class Router
   route: (app) =>
     meshbluAuth = new MeshbluAuth @meshbluConfig
 
-    app.get '/', (req, res) => res.redirect '/auth/octoblu'
     app.get '/auth/octoblu', passport.authenticate('octoblu')
     app.get '/auth/octoblu/callback', passport.authenticate('octoblu', failureRedirect: '/auth/octoblu'), @octobluAuthController.storeAuthAndRedirect
 
     app.use meshbluAuth.retrieve()
-    # app.use meshbluAuth.gatewayRedirect('/auth/octoblu')
-    #
+    app.use meshbluAuth.gatewayRedirect('/auth/octoblu')
+
+    app.get '/', (req, res) => res.send user: req.user, meshbluAuth: req.meshbluAuth
     app.get '/auth/<%= instancePrefix %>', passport.authenticate('<%= instancePrefix %>')
-    # app.get '/auth/<%= instancePrefix %>/callback', passport.authenticate('<%= instancePrefix %>', failureRedirect: '/login'), @<%= instancePrefix %>Controller.authenticated
+    app.get '/auth/<%= instancePrefix %>/callback', passport.authenticate('<%= instancePrefix %>', successRedirect: '/')
+
 
 module.exports = Router

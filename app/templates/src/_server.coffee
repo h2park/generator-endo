@@ -2,9 +2,10 @@ cors               = require 'cors'
 morgan             = require 'morgan'
 express            = require 'express'
 bodyParser         = require 'body-parser'
+cookieParser       = require 'cookie-parser'
+cookieSession      = require 'cookie-session'
 errorHandler       = require 'errorhandler'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
-cookieSession      = require 'cookie-session'
 MeshbluConfig      = require 'meshblu-config'
 OctobluStrategy    = require 'passport-octoblu'
 passport           = require 'passport'
@@ -23,7 +24,7 @@ class Server
   run: (callback) =>
     passport.serializeUser   (user, done) => done null, user
     passport.deserializeUser (user, done) => done null, user
-    passport.use new OctobluStrategy @octobluOauthOptions, (req, bearerToken, secret, {uuid}, next) =>
+    passport.use new OctobluStrategy @octobluOauthOptions, (req, bearerToken, secret, {uuid,token}, next) =>
       next null, {uuid, bearerToken}
 
     passport.use '<%= instancePrefix %>', @apiStrategy
@@ -33,7 +34,8 @@ class Server
     app.use morgan 'dev', immediate: false unless @disableLogging
     app.use cors()
     app.use errorHandler()
-    app.use cookieSession secret: @meshbluConfig.token
+    app.use cookieSession secret: 'here, kitty, kitty'# @meshbluConfig.token
+    app.use cookieParser()
     app.use passport.initialize()
     app.use passport.session()
     app.use bodyParser.urlencoded limit: '1mb', extended : true

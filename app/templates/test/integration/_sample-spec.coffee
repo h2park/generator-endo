@@ -127,10 +127,10 @@ describe 'Sample Spec', ->
       options =
         uri: '/auth/<%= instancePrefix %>'
         baseUrl: "http://localhost:#{@serverPort}"
+        followRedirect: false
         auth:
           username: 'some-uuid'
           password: 'some-token'
-        json: true
 
       request.get options, (error, @response, @body) =>
         done error
@@ -140,6 +140,38 @@ describe 'Sample Spec', ->
 
     it 'should return a 302', ->
       expect(@response.statusCode).to.equal 302
+
+  describe 'On GET /auth/<%= instancePrefix %>/callback', ->
+    beforeEach (done) ->
+      userAuth = new Buffer('some-uuid:some-token').toString 'base64'
+
+      @authDevice = @meshblu
+        .get '/v2/whoami'
+        .set 'Authorization', "Basic #{userAuth}"
+        .reply 200, uuid: 'some-uuid', token: 'some-token'
+
+      options =
+        uri: '/auth/<%= instancePrefix %>/callback'
+        baseUrl: "http://localhost:#{@serverPort}"
+        followRedirect: false
+        auth:
+          username: 'some-uuid'
+          password: 'some-token'
+        qs:
+          oauth_token: 'oauth_token'
+          oauth_verifier: 'oauth_verifier'
+
+      request.get options, (error, @response, @body) =>
+        done error
+
+    it 'should auth handler', ->
+      @authDevice.done()
+
+    it 'should return a 302', ->
+      expect(@response.statusCode).to.equal 302
+
+    it 'should redirect to /', ->
+      expect(@response.headers.location).to.equal '/'
 
   xdescribe 'when the service yields an error', ->
     beforeEach (done) ->
@@ -153,6 +185,7 @@ describe 'Sample Spec', ->
       options =
         uri: '/hello'
         baseUrl: "http://localhost:#{@serverPort}"
+        followRedirect: false
         auth:
           username: 'some-uuid'
           password: 'some-token'
