@@ -30,7 +30,6 @@ class Server
     app.use cors()
     app.use errorHandler()
     app.use passport.initialize()
-    app.use passport.session()
     app.use bodyParser.urlencoded limit: '1mb', extended : true
     app.use bodyParser.json limit : '1mb'
     app.options '*', cors()

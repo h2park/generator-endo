@@ -105,14 +105,8 @@ describe 'Sample Spec', ->
       it 'should redirect to /auth/twitter', ->
         expect(@response.headers.location).to.equal '/auth/twitter'
 
-  describe 'When unauthenticated', ->
-    describe 'On GET /', ->
-      beforeEach (done) ->
-        request.get "http://localhost:#{@serverPort}", followRedirect: false, (error, @response, @body) =>
-          done error
-
-      it 'should redirect to /auth/octoblu', ->
-        expect(@response.statusCode).to.equal 302, @body
+      it 'should set the meshblu auth cookies', ->
+        expect(@response.headers['set-cookie']).to.contain 'meshblu_auth_bearer=dTp0Mg%3D%3D; Path=/'
 
   describe 'On GET /auth/twitter', ->
     beforeEach (done) ->
@@ -137,8 +131,8 @@ describe 'Sample Spec', ->
     it 'should auth handler', ->
       @authDevice.done()
 
-    it 'should return a 200', ->
-      expect(@response.statusCode).to.equal 200
+    xit 'should return a 302', ->
+      expect(@response.statusCode).to.equal 302
 
   xdescribe 'when the service yields an error', ->
     beforeEach (done) ->
