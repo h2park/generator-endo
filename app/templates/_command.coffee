@@ -18,6 +18,7 @@ class Command
         authorizationURL: "#{process.env.ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL}/authorize"
         tokenURL:         "#{process.env.ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL}/access_token"
         passReqToCallback: true
+        meshbluConfig:  new MeshbluConfig().toJSON()
     }
 
   panic: (error) =>

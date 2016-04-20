@@ -14,7 +14,6 @@ class Server
   constructor: ({@disableLogging, @octobluOauthOptions, @port, @meshbluConfig})->
     throw new Error('meshbluConfig is required') unless @meshbluConfig?
     throw new Error('octobluOauthOptions are required') unless @octobluOauthOptions?
-    @meshbluConfig ?= new MeshbluConfig().toJSON()
 
   address: =>
     @server.address()

@@ -6,13 +6,20 @@ Server  = require '../../src/server'
 describe 'Sample Spec', ->
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
+    @oauth = shmock 0xcafe
 
     serverOptions =
       port: undefined,
       disableLogging: true
       octobluOauthOptions:
-        clientID: '12345'
+        clientID: 'client-id'
         clientSecret: '12345'
+        authorizationURL: 'http://oauth.octoblu.xxx/authorize'
+        tokenURL: "http://localhost:#{0xcafe}/access_token"
+        passReqToCallback: true
+        meshbluConfig:
+          server: 'localhost'
+          port: 0xd00d
       meshbluConfig:
         server: 'localhost'
         port: 0xd00d
@@ -26,6 +33,9 @@ describe 'Sample Spec', ->
 
   afterEach (done) ->
     @server.stop done
+
+  afterEach (done) ->
+    @oauth.close done
 
   afterEach (done) ->
     @meshblu.close done
@@ -55,8 +65,42 @@ describe 'Sample Spec', ->
         request.get '/auth/octoblu', options, (error, @response, @body) =>
           done error
 
-      it 'should redirect to /auth/octoblu', ->
+      it 'should return a 302', ->
         expect(@response.statusCode).to.equal 302, @body
+
+      it 'should redirect to oauth.octoblu.xxx/authorize', ->
+        expect(@response.headers.location).to.equal 'http://oauth.octoblu.xxx/authorize?response_type=code&client_id=client-id'
+
+    describe 'On GET /auth/octoblu/callback with a valid code', ->
+      beforeEach (done) ->
+        @oauth
+          .post '/access_token'
+          .send
+            code: new Buffer('client-id:u:t1').toString 'base64'
+            grant_type: 'authorization_code'
+            client_id: 'client-id'
+            client_secret: '12345'
+          .reply 200,
+            token_type:   "bearer"
+            access_token:  new Buffer('u:t2').toString 'base64'
+            expires_in:    3600
+
+        @meshblu
+          .get '/v2/whoami'
+          .set 'Authorization', "Bearer #{new Buffer('u:t2').toString 'base64'}"
+          .reply 200, {}
+
+        options =
+          baseUrl: "http://localhost:#{@serverPort}"
+          followRedirect: false
+          qs:
+            code: new Buffer('client-id:u:t1').toString 'base64'
+
+        request.get '/auth/octoblu/callback', options, (error, @response, @body) =>
+          done error
+
+      it 'should redirect to /auth/twitter', ->
+        expect(@response.statusCode).to.equal 302
 
   xdescribe 'When unauthenticated', ->
     describe 'On GET /', ->

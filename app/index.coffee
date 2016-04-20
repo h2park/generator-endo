@@ -18,6 +18,7 @@ class OctobluServiceGenerator extends yeoman.Base
 
   initializing: =>
     @appname = _.kebabCase @appname
+    @noEndo = _.trimStart @appname, 'endo-'
     @env.error 'appname must start with "endo-", exiting.' unless _.startsWith @appname, 'endo-'
 
   prompting: =>
@@ -50,11 +51,10 @@ class OctobluServiceGenerator extends yeoman.Base
     @copy '_gitignore', '.gitignore'
 
   writing: =>
-    nameWithoutEndo = _.trimStart @appname, 'endo-'
-    filePrefix = _.kebabCase nameWithoutEndo
-    instancePrefix = _.camelCase nameWithoutEndo
+    filePrefix = _.kebabCase @noEndo
+    instancePrefix = _.camelCase @noEndo
     classPrefix = _.upperFirst instancePrefix
-    constantPrefix = _.toUpper _.snakeCase nameWithoutEndo
+    constantPrefix = _.toUpper _.snakeCase @noEndo
 
     context = {
       @githubUrl
@@ -84,9 +84,13 @@ class OctobluServiceGenerator extends yeoman.Base
 
   install: =>
     return if @skipInstall
-    @installDependencies()
+
+    done = @async()
+
+    @installDependencies bower: false, =>
+      @npmInstall "passport-#{@noEndo}", save: true, done
 
   end: =>
-    @log "\nYou're probably going to want to run 'npm install --save passport-#{_.trimStart @appname, 'endo-'}'\n"
+    @log "\nYou're probably going to want to run 'npm install --save passport-#{@noEndo}'. Unless I already did that for you\n"
 
 module.exports = OctobluServiceGenerator
