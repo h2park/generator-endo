@@ -99,10 +99,13 @@ describe 'Sample Spec', ->
         request.get '/auth/octoblu/callback', options, (error, @response, @body) =>
           done error
 
-      it 'should redirect to /auth/twitter', ->
+      it 'should return a 302', ->
         expect(@response.statusCode).to.equal 302
 
-  xdescribe 'When unauthenticated', ->
+      it 'should redirect to /auth/twitter', ->
+        expect(@response.headers.location).to.equal '/auth/twitter'
+
+  describe 'When unauthenticated', ->
     describe 'On GET /', ->
       beforeEach (done) ->
         request.get "http://localhost:#{@serverPort}", followRedirect: false, (error, @response, @body) =>
@@ -111,8 +114,7 @@ describe 'Sample Spec', ->
       it 'should redirect to /auth/octoblu', ->
         expect(@response.statusCode).to.equal 302, @body
 
-
-  xdescribe 'On GET /auth/twitter', ->
+  describe 'On GET /auth/twitter', ->
     beforeEach (done) ->
       userAuth = new Buffer('some-uuid:some-token').toString 'base64'
 

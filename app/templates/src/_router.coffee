@@ -11,7 +11,7 @@ class Router
 
     app.get '/', (req, res) => res.redirect '/auth/octoblu'
     app.get '/auth/octoblu', passport.authenticate('octoblu')
-    app.get '/auth/octoblu/callback', passport.authenticate('octoblu', failureRedirect: '/login', successRedirect: '/auth/twitter')
+    app.get '/auth/octoblu/callback', passport.authenticate('octoblu', failureRedirect: '/auth/octoblu', successRedirect: '/auth/twitter')
 
     # app.use meshbluAuth.retrieve()
     # app.use meshbluAuth.gatewayRedirect('/auth/octoblu')
