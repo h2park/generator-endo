@@ -15,7 +15,7 @@ class Command
       consumerKey: process.env.ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_KEY
       consumerSecret: process.env.ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_SECRET
     }, (token, tokenSecret, profile, next) =>
-      next null, {token, tokenSecret, profileId: profile.id}
+      next null, {token, tokenSecret, profileID: profile.id}
 
     return {
       port:           process.env.PORT || 80

@@ -27,7 +27,8 @@ describe 'Sample Spec', ->
       meshbluConfig:
         server: 'localhost'
         port: 0xd00d
-        token: 'peter'
+        uuid: 'peter'
+        token: 'i could eat'
 
     @server = new Server serverOptions
 
@@ -142,62 +143,88 @@ describe 'Sample Spec', ->
       expect(@response.statusCode).to.equal 302
 
   describe 'On GET /auth/<%= instancePrefix %>/callback', ->
-    beforeEach (done) ->
-      userAuth = new Buffer('some-uuid:some-token').toString 'base64'
+    describe 'when the credentials device does not exist', ->
+      beforeEach (done) ->
+        userAuth = new Buffer('some-uuid:some-token').toString 'base64'
 
-      @authDevice = @meshblu
-        .get '/v2/whoami'
-        .set 'Authorization', "Basic #{userAuth}"
-        .reply 200, uuid: 'some-uuid', token: 'some-token'
+        @meshblu
+          .get '/v2/whoami'
+          .set 'Authorization', "Basic #{userAuth}"
+          .reply 200, uuid: 'some-uuid', token: 'some-token'
 
-      options =
-        uri: '/auth/<%= instancePrefix %>/callback'
-        baseUrl: "http://localhost:#{@serverPort}"
-        followRedirect: false
-        auth:
-          username: 'some-uuid'
-          password: 'some-token'
-        qs:
-          oauth_token: 'oauth_token'
-          oauth_verifier: 'oauth_verifier'
+        @meshblu
+          .post '/search/devices'
+          .send endo: {clientID: 'oauth_token'}
+          .reply 200, []
 
-      request.get options, (error, @response, @body) =>
-        done error
+        @createCredentialsDevice = @meshblu
+          .post '/devices'
+          .send
+            endo:
+              clientID: 'oauth_token'
+            meshblu:
+              version: '2.0.0'
+              discover:
+                view:
+                  peter: {}
+              configure:
+                update:
+                  peter: {}
+          .reply 200, uuid: 'cred-uuid', token: 'cred-token'
 
-    it 'should auth handler', ->
-      @authDevice.done()
+        options =
+          uri: '/auth/<%= instancePrefix %>/callback'
+          baseUrl: "http://localhost:#{@serverPort}"
+          followRedirect: false
+          auth:
+            username: 'some-uuid'
+            password: 'some-token'
+          qs:
+            oauth_token: 'oauth_token'
+            oauth_verifier: 'oauth_verifier'
 
-    it 'should return a 302', ->
-      expect(@response.statusCode).to.equal 302
+        request.get options, (error, @response, @body) =>
+          done error
 
-    it 'should redirect to /', ->
-      expect(@response.headers.location).to.equal '/'
+      it 'should return a 302', ->
+        expect(@response.statusCode).to.equal 302
 
-  xdescribe 'when the service yields an error', ->
-    beforeEach (done) ->
-      userAuth = new Buffer('some-uuid:some-token').toString 'base64'
+      it 'should redirect to /', ->
+        expect(@response.headers.location).to.equal '/'
 
-      @authDevice = @meshblu
-        .get '/v2/whoami'
-        .set 'Authorization', "Basic #{userAuth}"
-        .reply 200, uuid: 'some-uuid', token: 'some-token'
+      it 'should create a credentials device', ->
+        @createCredentialsDevice.done()
 
-      options =
-        uri: '/hello'
-        baseUrl: "http://localhost:#{@serverPort}"
-        followRedirect: false
-        auth:
-          username: 'some-uuid'
-          password: 'some-token'
-        qs:
-          hasError: true
-        json: true
+    describe 'when the credentials device does exist', ->
+      beforeEach (done) ->
+        userAuth = new Buffer('some-uuid:some-token').toString 'base64'
 
-      request.get options, (error, @response, @body) =>
-        done error
+        @meshblu
+          .get '/v2/whoami'
+          .set 'Authorization', "Basic #{userAuth}"
+          .reply 200, uuid: 'some-uuid', token: 'some-token'
 
-    it 'should auth handler', ->
-      @authDevice.done()
+        @meshblu
+          .post '/search/devices'
+          .send 'endo': {'clientID': 'oauth_token'}
+          .reply 200, [{uuid: 'cred-uuid', token: 'cred-token'}]
 
-    it 'should return a 755 because ya', ->
-      expect(@response.statusCode).to.equal 755
+        options =
+          uri: '/auth/<%= instancePrefix %>/callback'
+          baseUrl: "http://localhost:#{@serverPort}"
+          followRedirect: false
+          auth:
+            username: 'some-uuid'
+            password: 'some-token'
+          qs:
+            oauth_token: 'oauth_token'
+            oauth_verifier: 'oauth_verifier'
+
+        request.get options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 302', ->
+        expect(@response.statusCode).to.equal 302
+
+      it 'should redirect to /', ->
+        expect(@response.headers.location).to.equal '/'

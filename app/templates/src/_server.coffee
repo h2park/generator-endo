@@ -6,11 +6,13 @@ cookieParser       = require 'cookie-parser'
 cookieSession      = require 'cookie-session'
 errorHandler       = require 'errorhandler'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
+sendError          = require 'express-send-error'
 MeshbluConfig      = require 'meshblu-config'
 OctobluStrategy    = require 'passport-octoblu'
 passport           = require 'passport'
 debug              = require('debug')('<%= appname %>:server')
 Router             = require './router'
+CredentialsDeviceService = require './services/credentials-device-service'
 
 class Server
   constructor: ({@disableLogging, @octobluOauthOptions, @port, @apiStrategy, @meshbluConfig})->
@@ -40,9 +42,12 @@ class Server
     app.use passport.session()
     app.use bodyParser.urlencoded limit: '1mb', extended : true
     app.use bodyParser.json limit : '1mb'
+    app.use sendError()
     app.options '*', cors()
 
-    router = new Router {@meshbluConfig}
+    credentialsDeviceService = new CredentialsDeviceService {@meshbluConfig}
+
+    router = new Router {credentialsDeviceService, @meshbluConfig}
     router.route app
 
     @server = app.listen @port, callback

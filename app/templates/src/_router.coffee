@@ -1,11 +1,11 @@
 MeshbluAuth = require 'express-meshblu-auth'
 passport    = require 'passport'
-<%= classPrefix %>Controller = require './controllers/<%= filePrefix %>-controller'
+CredentialsDeviceController = require './controllers/credentials-device-controller'
 OctobluAuthController = require './controllers/octoblu-auth-controller'
 
 class Router
-  constructor: ({@meshbluConfig}) ->
-    @<%= instancePrefix %>Controller = new <%= classPrefix %>Controller
+  constructor: ({@credentialsDeviceService, @meshbluConfig}) ->
+    @credentialsDeviceController = new CredentialsDeviceController {@credentialsDeviceService}
     @octobluAuthController = new OctobluAuthController
 
   route: (app) =>
@@ -19,7 +19,6 @@ class Router
 
     app.get '/', (req, res) => res.send user: req.user, meshbluAuth: req.meshbluAuth
     app.get '/auth/<%= instancePrefix %>', passport.authenticate('<%= instancePrefix %>')
-    app.get '/auth/<%= instancePrefix %>/callback', passport.authenticate('<%= instancePrefix %>', successRedirect: '/')
-
+    app.get '/auth/<%= instancePrefix %>/callback', passport.authenticate('<%= instancePrefix %>'), @credentialsDeviceController.upsert
 
 module.exports = Router
