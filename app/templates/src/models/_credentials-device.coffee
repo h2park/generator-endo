@@ -1,16 +1,18 @@
 MeshbluHTTP = require 'meshblu-http'
+Encryption  = require 'meshblu-encryption'
+
 class CredentialsDevice
   constructor: (meshbluConfig) ->
-    console.log meshbluConfig
     {@uuid} = meshbluConfig
     @meshblu = new MeshbluHTTP meshbluConfig
+    @encryption = Encryption.fromJustGuess meshbluConfig.privateKey
 
   update: ({authorizedUuid, clientSecret}, callback) =>
     update =
       $set:
         'endo.authorizedUuid': authorizedUuid
-        'endo.clientSecret'  : clientSecret
-         
+        'endo.clientSecret'  : @encryption.encryptOptions clientSecret
+
     @meshblu.updateDangerously @uuid, update, callback
 
 

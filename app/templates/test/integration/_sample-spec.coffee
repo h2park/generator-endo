@@ -1,12 +1,23 @@
+_ = require 'lodash'
+fs           = require 'fs'
 http         = require 'http'
 request      = require 'request'
 shmock       = require '@octoblu/shmock'
 MockStrategy = require '../mock-strategy'
 Server       = require '../../src/server'
+Encryption   = require 'meshblu-encryption'
 
 describe 'Sample Spec', ->
   beforeEach (done) ->
-    @meshblu = shmock 0xd00d
+    @privateKey = fs.readFileSync "#{__dirname}/../data/private-key.pem", 'utf8'
+    encryption = Encryption.fromPem @privateKey
+
+    decryptClientSecret = (req, res, next) =>
+      return next() unless req.body?.$set?['endo.clientSecret']?
+      req.body.$set['endo.clientSecret'] = encryption.decryptOptions req.body.$set['endo.clientSecret']
+      next()
+
+    @meshblu = shmock 0xd00d, [decryptClientSecret]
     @oauth = shmock 0xcafe
 
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
@@ -29,6 +40,7 @@ describe 'Sample Spec', ->
         port: 0xd00d
         uuid: 'peter'
         token: 'i-could-eat'
+        privateKey: @privateKey
 
     @server = new Server serverOptions
 

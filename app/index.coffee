@@ -78,6 +78,7 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
     @template "test/_mock-strategy.coffee", "test/mock-strategy.coffee", context
     @template "test/integration/_sample-spec.coffee", "test/integration/#{filePrefix}-spec.coffee", context
+    @template "test/data/_private-key.pem", "test/data/private-key.pem", context
     @template "_index.js", "index.js", context
     @template "_command.js", "command.js", context
     @template "_command.coffee", "command.coffee", context
