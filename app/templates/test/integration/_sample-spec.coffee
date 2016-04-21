@@ -4,7 +4,7 @@ shmock       = require '@octoblu/shmock'
 MockStrategy = require '../mock-strategy'
 Server       = require '../../src/server'
 
-describe 'Sample Spec', ->
+xdescribe 'Sample Spec', ->
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
     @oauth = shmock 0xcafe
@@ -164,12 +164,13 @@ describe 'Sample Spec', ->
               clientID: 'oauth_token'
             meshblu:
               version: '2.0.0'
-              discover:
-                view:
-                  peter: {}
-              configure:
-                update:
-                  peter: {}
+              whitelists:
+                discover:
+                  view:
+                    peter: {}
+                configure:
+                  update:
+                    peter: {}
           .reply 200, uuid: 'cred-uuid', token: 'cred-token'
 
         options =

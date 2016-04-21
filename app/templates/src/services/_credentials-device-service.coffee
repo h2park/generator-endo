@@ -7,7 +7,8 @@ class CredentialsDeviceService
     @meshblu = new MeshbluHTTP meshbluConfig
 
   findOrCreate: (clientID, callback) =>
-    @meshblu.search endo: {clientID}, {}, (error, devices) =>
+    return callback new Error('clientID is required') unless clientID?
+    @meshblu.search 'endo.clientID': clientID, {}, (error, devices) =>
       return callback error if error?
       return callback null, _.first devices unless _.isEmpty devices
       @meshblu.register @newRecord(clientID), callback
@@ -18,12 +19,13 @@ class CredentialsDeviceService
         clientID: clientID
       meshblu:
         version: '2.0.0'
-        discover:
-          view:
-            "#{@uuid}": {}
-        configure:
-          update:
-            "#{@uuid}": {}
+        whitelists:
+          discover:
+            view:
+              "#{@uuid}": {}
+          configure:
+            update:
+              "#{@uuid}": {}
     }
 
 module.exports = CredentialsDeviceService
