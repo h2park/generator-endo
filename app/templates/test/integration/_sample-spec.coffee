@@ -4,7 +4,7 @@ shmock       = require '@octoblu/shmock'
 MockStrategy = require '../mock-strategy'
 Server       = require '../../src/server'
 
-xdescribe 'Sample Spec', ->
+describe 'Sample Spec', ->
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
     @oauth = shmock 0xcafe
@@ -28,7 +28,7 @@ xdescribe 'Sample Spec', ->
         server: 'localhost'
         port: 0xd00d
         uuid: 'peter'
-        token: 'i could eat'
+        token: 'i-could-eat'
 
     @server = new Server serverOptions
 
@@ -146,6 +146,8 @@ xdescribe 'Sample Spec', ->
     describe 'when the credentials device does not exist', ->
       beforeEach (done) ->
         userAuth = new Buffer('some-uuid:some-token').toString 'base64'
+        serviceAuth = new Buffer('peter:i-could-eat').toString 'base64'
+        credentialsDeviceAuth = new Buffer('cred-uuid:cred-token2').toString 'base64'
 
         @meshblu
           .get '/v2/whoami'
@@ -154,11 +156,13 @@ xdescribe 'Sample Spec', ->
 
         @meshblu
           .post '/search/devices'
-          .send endo: {clientID: 'oauth_token'}
+          .set 'Authorization', "Basic #{serviceAuth}"
+          .send 'endo.clientID': 'oauth_token'
           .reply 200, []
 
         @createCredentialsDevice = @meshblu
           .post '/devices'
+          .set 'Authorization', "Basic #{serviceAuth}"
           .send
             endo:
               clientID: 'oauth_token'
@@ -166,12 +170,24 @@ xdescribe 'Sample Spec', ->
               version: '2.0.0'
               whitelists:
                 discover:
-                  view:
-                    peter: {}
+                  view: [{uuid: 'peter'}]
                 configure:
-                  update:
-                    peter: {}
+                  update: [{uuid: 'peter'}]
           .reply 200, uuid: 'cred-uuid', token: 'cred-token'
+
+        @meshblu
+          .post '/devices/cred-uuid/tokens'
+          .set 'Authorization', "Basic #{serviceAuth}"
+          .reply 201, '{"uuid": "cred-uuid", "token": "cred-token2"}'
+
+        @updateCredentialsDevice = @meshblu
+          .put '/v2/devices/cred-uuid'
+          .set 'Authorization', "Basic #{credentialsDeviceAuth}"
+          .send
+            '$set':
+              'endo.authorizedUuid': 'some-uuid'
+              'endo.clientSecret':   'oauth_verifier'
+          .reply 204
 
         options =
           uri: '/auth/<%= instancePrefix %>/callback'
@@ -187,14 +203,17 @@ xdescribe 'Sample Spec', ->
         request.get options, (error, @response, @body) =>
           done error
 
-      it 'should return a 302', ->
+      xit 'should return a 302', ->
         expect(@response.statusCode).to.equal 302
 
-      it 'should redirect to /', ->
+      xit 'should redirect to /', ->
         expect(@response.headers.location).to.equal '/'
 
       it 'should create a credentials device', ->
         @createCredentialsDevice.done()
+
+      it 'should update the credentials device with the new clientSecret and authorizedUuid', ->
+        @updateCredentialsDevice.done()
 
     describe 'when the credentials device does exist', ->
       beforeEach (done) ->
@@ -207,7 +226,7 @@ xdescribe 'Sample Spec', ->
 
         @meshblu
           .post '/search/devices'
-          .send 'endo': {'clientID': 'oauth_token'}
+          .send 'endo.clientID': 'oauth_token'
           .reply 200, [{uuid: 'cred-uuid', token: 'cred-token'}]
 
         options =
@@ -224,8 +243,8 @@ xdescribe 'Sample Spec', ->
         request.get options, (error, @response, @body) =>
           done error
 
-      it 'should return a 302', ->
+      xit 'should return a 302', ->
         expect(@response.statusCode).to.equal 302
 
-      it 'should redirect to /', ->
+      xit 'should redirect to /', ->
         expect(@response.headers.location).to.equal '/'

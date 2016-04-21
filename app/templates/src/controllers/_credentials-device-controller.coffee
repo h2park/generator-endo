@@ -1,12 +1,19 @@
-MeshbluHTTP = require 'meshblu-http'
-
 class CredentialsDeviceController
   constructor: ({@credentialsDeviceService}) ->
 
   upsert: (req, res) =>
-    @credentialsDeviceService.findOrCreate req.user.clientID, (error, credentialsDevice) =>
+    {clientID, clientSecret} = req.user
+    authorizedUuid = req.meshbluAuth.uuid
+
+    @credentialsDeviceService.findOrCreate clientID, (error, credentialsDevice) =>
       return res.sendError error if error?
-      res.send credentialsDevice
+      
+      credentialsDevice.update {clientSecret, authorizedUuid}, (error) =>
+        return res.sendError error if error?
+
+        @credentialsDeviceService.meshblu.device credentialsDevice.uuid, (error, credentialsDevice) =>
+          return res.sendError error if error?
+          return res.send credentialsDevice
 
 
 module.exports = CredentialsDeviceController

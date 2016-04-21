@@ -39,7 +39,7 @@
     "express": "^4.13.3",
     "express-meshblu-healthcheck": "^1.0.1",
     "express-meshblu-auth": "^5.0.0",
-    "express-send-error": "^1.0.4",
+    "express-send-error": "^1.1.0",
     "cookie-parser": "^1.4.1",
     "cookie-session": "^2.0.0-alpha.1",
     "lodash": "^4.11.1",
