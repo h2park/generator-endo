@@ -7,6 +7,9 @@ class CredentialsDeviceService
     @uuid = @meshbluConfig.uuid
     @meshblu = new MeshbluHTTP @meshbluConfig
 
+  findByUuid: (uuid, callback) =>
+    @_getCredentialsDevice {uuid}, callback
+
   findOrCreate: (clientID, callback) =>
     @_findOrCreate clientID, (error, device) =>
       return callback error if error?

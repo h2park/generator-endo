@@ -215,21 +215,23 @@ describe 'Sample Spec', ->
         request.get options, (error, @response, @body) =>
           done error
 
-      xit 'should return a 302', ->
-        expect(@response.statusCode).to.equal 302
-
-      xit 'should redirect to /', ->
-        expect(@response.headers.location).to.equal '/'
-
       it 'should create a credentials device', ->
         @createCredentialsDevice.done()
 
       it 'should update the credentials device with the new clientSecret and authorizedUuid', ->
         @updateCredentialsDevice.done()
 
+      it 'should return a 302', ->
+        expect(@response.statusCode).to.equal 302
+
+      it 'should redirect to /cred-uuid/user-devices', ->
+        expect(@response.headers.location).to.equal '/cred-uuid/user-devices'
+
     describe 'when the credentials device does exist', ->
       beforeEach (done) ->
         userAuth = new Buffer('some-uuid:some-token').toString 'base64'
+        serviceAuth = new Buffer('peter:i-could-eat').toString 'base64'
+        credentialsDeviceAuth = new Buffer('cred-uuid:cred-token2').toString 'base64'
 
         @meshblu
           .get '/v2/whoami'
@@ -238,8 +240,23 @@ describe 'Sample Spec', ->
 
         @meshblu
           .post '/search/devices'
+          .set 'Authorization', "Basic #{serviceAuth}"
           .send 'endo.clientID': 'oauth_token'
           .reply 200, [{uuid: 'cred-uuid', token: 'cred-token'}]
+
+        @meshblu
+          .post '/devices/cred-uuid/tokens'
+          .set 'Authorization', "Basic #{serviceAuth}"
+          .reply 201, '{"uuid": "cred-uuid", "token": "cred-token2"}'
+
+        @updateCredentialsDevice = @meshblu
+          .put '/v2/devices/cred-uuid'
+          .set 'Authorization', "Basic #{credentialsDeviceAuth}"
+          .send
+            '$set':
+              'endo.authorizedUuid': 'some-uuid'
+              'endo.clientSecret':   'oauth_verifier'
+          .reply 204
 
         options =
           uri: '/auth/<%= instancePrefix %>/callback'
@@ -255,8 +272,11 @@ describe 'Sample Spec', ->
         request.get options, (error, @response, @body) =>
           done error
 
-      xit 'should return a 302', ->
+      it 'should update the credentials device with the new clientSecret and authorizedUuid', ->
+        @updateCredentialsDevice.done()
+
+      it 'should return a 302', ->
         expect(@response.statusCode).to.equal 302
 
-      xit 'should redirect to /', ->
-        expect(@response.headers.location).to.equal '/'
+      it 'should redirect to /cred-uuid/user-devices', ->
+        expect(@response.headers.location).to.equal '/cred-uuid/user-devices'

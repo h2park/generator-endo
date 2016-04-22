@@ -71,6 +71,7 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "src/_router.coffee", "src/router.coffee", context
     @template "src/controllers/_controller.coffee", "src/controllers/#{filePrefix}-controller.coffee", context
     @template "src/controllers/_credentials-device-controller.coffee", "src/controllers/credentials-device-controller.coffee", context
+    @template "src/controllers/_user-devices-controller.coffee", "src/controllers/user-devices-controller.coffee", context
     @template "src/controllers/_octoblu-auth-controller.coffee", "src/controllers/octoblu-auth-controller.coffee", context
     @template "src/models/_credentials-device.coffee", "src/models/credentials-device.coffee", context
     @template "src/services/_credentials-device-service.coffee", "src/services/credentials-device-service.coffee", context
@@ -78,6 +79,7 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
     @template "test/_mock-strategy.coffee", "test/mock-strategy.coffee", context
     @template "test/integration/_sample-spec.coffee", "test/integration/#{filePrefix}-spec.coffee", context
+    @template "test/integration/_user-devices-spec.coffee", "test/integration/user-devices-spec.coffee", context
     @template "test/data/_private-key.pem", "test/data/private-key.pem", context
     @template "_index.js", "index.js", context
     @template "_command.js", "command.js", context

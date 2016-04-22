@@ -27,9 +27,10 @@ describe 'app', ->
       src/controllers/app-controller.coffee
       src/controllers/octoblu-auth-controller.coffee
       src/controllers/credentials-device-controller.coffee
-      src/controllers/credentials-device-controller.coffee
+      src/controllers/user-devices-controller.coffee
       src/services/credentials-device-service.coffee
       test/integration/app-spec.coffee
+      test/integration/user-devices-spec.coffee
       test/data/private-key.pem
       test/mock-strategy.coffee
       test/test_helper.coffee
