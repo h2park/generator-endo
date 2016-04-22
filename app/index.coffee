@@ -69,6 +69,7 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "_package.json", "package.json", context
     @template "src/_server.coffee", "src/server.coffee", context
     @template "src/_router.coffee", "src/router.coffee", context
+    @template "src/_user-device-config-generator.coffee", "src/user-device-config-generator.coffee", context
     @template "src/controllers/_controller.coffee", "src/controllers/#{filePrefix}-controller.coffee", context
     @template "src/controllers/_credentials-device-controller.coffee", "src/controllers/credentials-device-controller.coffee", context
     @template "src/controllers/_user-devices-controller.coffee", "src/controllers/user-devices-controller.coffee", context

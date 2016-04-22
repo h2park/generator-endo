@@ -23,5 +23,6 @@ class Router
     app.get '/auth/<%= instancePrefix %>', passport.authenticate('<%= instancePrefix %>')
     app.get '/auth/<%= instancePrefix %>/callback', passport.authenticate('<%= instancePrefix %>'), @credentialsDeviceController.upsert
     app.get '/:credentialsDeviceUuid/user-devices', @userDevicesController.list
+    app.post '/:credentialsDeviceUuid/user-devices', @userDevicesController.create
 
 module.exports = Router

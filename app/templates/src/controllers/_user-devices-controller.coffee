@@ -11,4 +11,14 @@ class UserDevicesController
         return res.sendError error if error?
         res.send userDevices
 
+  create: (req, res) =>
+    {credentialsDeviceUuid} = req.params
+    authorizedUuid = req.meshbluAuth.uuid
+    @credentialsDeviceService.authorizedFindByUuid {authorizedUuid, credentialsDeviceUuid}, (error, credentialsDevice) =>
+      return res.sendError error if error?
+      credentialsDevice.createUserDevice {authorizedUuid}, (error, userDevice) =>
+        return res.sendError error if error?
+        res.status(201).send userDevice
+
+
 module.exports = UserDevicesController

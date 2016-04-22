@@ -1,11 +1,18 @@
+fs          = require 'fs'
 _           = require 'lodash'
 MeshbluHTTP = require 'meshblu-http'
 Encryption  = require 'meshblu-encryption'
+path        = require 'path'
+
+userDeviceConfigGenerator = require '../user-device-config-generator'
 
 class CredentialsDevice
   constructor: (meshbluConfig) ->
     {@uuid, @privateKey} = meshbluConfig
     @meshblu = new MeshbluHTTP meshbluConfig
+
+  createUserDevice: ({authorizedUuid}, callback) =>
+    @meshblu.register userDeviceConfigGenerator({authorizedUuid}), callback
 
   getUuid: => @uuid
 

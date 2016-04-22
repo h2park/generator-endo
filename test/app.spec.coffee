@@ -22,6 +22,7 @@ describe 'app', ->
   it 'creates expected files', ->
     assert.file '''
       Dockerfile
+      src/user-device-config-generator.coffee
       src/server.coffee
       src/router.coffee
       src/controllers/app-controller.coffee
