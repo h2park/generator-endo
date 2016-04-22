@@ -23,8 +23,15 @@ describe 'Sample Spec', ->
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
 
     serverOptions =
-      port: undefined,
+      apiStrategy: @apiStrategy
       disableLogging: true
+      meshbluConfig:
+        server: 'localhost'
+        port: 0xd00d
+        uuid: 'peter'
+        token: 'i-could-eat'
+        privateKey: @privateKey
+      port: undefined,
       octobluOauthOptions:
         clientID: 'client-id'
         clientSecret: '12345'
@@ -34,13 +41,7 @@ describe 'Sample Spec', ->
         meshbluConfig:
           server: 'localhost'
           port: 0xd00d
-      apiStrategy: @apiStrategy
-      meshbluConfig:
-        server: 'localhost'
-        port: 0xd00d
-        uuid: 'peter'
-        token: 'i-could-eat'
-        privateKey: @privateKey
+      serviceUrl: "http://the-endo-url"
 
     @server = new Server serverOptions
 
@@ -199,6 +200,12 @@ describe 'Sample Spec', ->
             '$set':
               'endo.authorizedUuid': 'some-uuid'
               'endo.clientSecret':   'oauth_verifier'
+              'meshblu.forwarders.message.received': [{
+                type: 'webhook'
+                url: 'http://the-endo-url'
+                method: 'POST'}
+              ]
+
           .reply 204
 
         @createMessageReceivedSubscription = @meshblu
@@ -264,6 +271,11 @@ describe 'Sample Spec', ->
             '$set':
               'endo.authorizedUuid': 'some-uuid'
               'endo.clientSecret':   'oauth_verifier'
+              'meshblu.forwarders.message.received': [{
+                type: 'webhook'
+                url: 'http://the-endo-url'
+                method: 'POST'}
+              ]
           .reply 204
 
         @createMessageReceivedSubscription = @meshblu

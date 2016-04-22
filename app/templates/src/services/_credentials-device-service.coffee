@@ -3,7 +3,7 @@ MeshbluHTTP = require 'meshblu-http'
 CredentialsDevice = require '../models/credentials-device'
 
 class CredentialsDeviceService
-  constructor: ({@meshbluConfig}) ->
+  constructor: ({@meshbluConfig, @serviceUrl}) ->
     @uuid = @meshbluConfig.uuid
     @meshblu = new MeshbluHTTP @meshbluConfig
 
@@ -28,7 +28,8 @@ class CredentialsDeviceService
   _getCredentialsDevice: ({uuid}, callback) =>
     @meshblu.generateAndStoreToken uuid, (error, {token}={}) =>
       return callback error if error?
-      return callback null, new CredentialsDevice _.defaults({uuid, token}, @meshbluConfig)
+      meshbluConfig = _.defaults {uuid, token}, @meshbluConfig
+      return callback null, new CredentialsDevice {meshbluConfig, @serviceUrl}
 
   newRecord: (clientID) =>
     return {

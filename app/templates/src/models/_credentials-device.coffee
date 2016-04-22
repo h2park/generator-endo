@@ -7,7 +7,7 @@ path        = require 'path'
 userDeviceConfigGenerator = require '../user-device-config-generator'
 
 class CredentialsDevice
-  constructor: (meshbluConfig) ->
+  constructor: ({@serviceUrl, meshbluConfig}) ->
     {@uuid, @privateKey} = meshbluConfig
     @meshblu = new MeshbluHTTP meshbluConfig
 
@@ -35,6 +35,11 @@ class CredentialsDevice
       $set:
         'endo.authorizedUuid': authorizedUuid
         'endo.clientSecret'  : encryption.encryptOptions clientSecret
+        'meshblu.forwarders.message.received': [{
+          type: 'webhook'
+          url:  @serviceUrl
+          method: 'POST'
+        }]
 
     @meshblu.updateDangerously @uuid, update, (error) =>
       return callback error if error?

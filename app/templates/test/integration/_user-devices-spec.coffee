@@ -25,6 +25,7 @@ describe 'Sample Spec', ->
           server: 'localhost'
           port: 0xd00d
       apiStrategy: @apiStrategy
+      serviceUrl: 'http://octoblu.xxx'
       meshbluConfig:
         server: 'localhost'
         port: 0xd00d

@@ -8,8 +8,9 @@ class Command
     @panic new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_ID') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_ID
     @panic new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_SECRET') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_SECRET
     @panic new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL
-    @panic new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_CONSUMER_KEY') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_KEY
-    @panic new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_CONSUMER_SECRET') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_SECRET
+    @panic new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_KEY') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_KEY
+    @panic new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_SECRET') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_SECRET
+    @panic new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_SERVICE_URL') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
 
     apiStrategy = new ApiStrategy {
       consumerKey: process.env.ENDO_<%= constantPrefix %>_TWITTER_CONSUMER_KEY
@@ -22,6 +23,7 @@ class Command
       disableLogging: process.env.DISABLE_LOGGING == "true"
       meshbluConfig:  new MeshbluConfig().toJSON()
       apiStrategy:    apiStrategy
+      serviceUrl:     process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
       octobluOauthOptions:
         clientID:         process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_ID
         clientSecret:     process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_SECRET

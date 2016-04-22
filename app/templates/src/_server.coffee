@@ -15,10 +15,11 @@ Router             = require './router'
 CredentialsDeviceService = require './services/credentials-device-service'
 
 class Server
-  constructor: ({@disableLogging, @octobluOauthOptions, @port, @apiStrategy, @meshbluConfig})->
+  constructor: ({@disableLogging, @octobluOauthOptions, @port, @apiStrategy, @serviceUrl, @meshbluConfig})->
     throw new Error('meshbluConfig is required') unless @meshbluConfig?
     throw new Error('octobluOauthOptions are required') unless @octobluOauthOptions?
     throw new Error('apiStrategy is required') unless @apiStrategy?
+    throw new Error('serviceUrl is required') unless @serviceUrl?
 
   address: =>
     @server.address()
@@ -45,7 +46,7 @@ class Server
     app.use sendError()
     app.options '*', cors()
 
-    credentialsDeviceService = new CredentialsDeviceService {@meshbluConfig}
+    credentialsDeviceService = new CredentialsDeviceService {@meshbluConfig, @serviceUrl}
 
     router = new Router {credentialsDeviceService, @meshbluConfig}
     router.route app
