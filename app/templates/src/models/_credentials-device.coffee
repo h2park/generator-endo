@@ -4,7 +4,8 @@ MeshbluHTTP = require 'meshblu-http'
 Encryption  = require 'meshblu-encryption'
 path        = require 'path'
 
-userDeviceConfigGenerator = require '../user-device-config-generator'
+credentialsDeviceUpdateGenerator = require '../config-generators/credentials-device-update-config-generator'
+userDeviceConfigGenerator = require '../config-generators/user-device-config-generator'
 
 class CredentialsDevice
   constructor: ({@serviceUrl, meshbluConfig}) ->
@@ -31,15 +32,12 @@ class CredentialsDevice
 
   update: ({authorizedUuid, clientSecret}, callback) =>
     encryption = Encryption.fromJustGuess @privateKey
-    update =
-      $set:
-        'endo.authorizedUuid': authorizedUuid
-        'endo.clientSecret'  : encryption.encryptOptions clientSecret
-        'meshblu.forwarders.message.received': [{
-          type: 'webhook'
-          url:  @serviceUrl
-          method: 'POST'
-        }]
+
+    update = credentialsDeviceUpdateGenerator({
+      authorizedUuid: authorizedUuid
+      clientSecret: encryption.encryptOptions clientSecret
+      serviceUrl: @serviceUrl
+    })
 
     @meshblu.updateDangerously @uuid, update, (error) =>
       return callback error if error?

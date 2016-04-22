@@ -69,11 +69,13 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "_package.json", "package.json", context
     @template "src/_server.coffee", "src/server.coffee", context
     @template "src/_router.coffee", "src/router.coffee", context
-    @template "src/_user-device-config-generator.coffee", "src/user-device-config-generator.coffee", context
     @template "src/controllers/_controller.coffee", "src/controllers/#{filePrefix}-controller.coffee", context
     @template "src/controllers/_credentials-device-controller.coffee", "src/controllers/credentials-device-controller.coffee", context
     @template "src/controllers/_user-devices-controller.coffee", "src/controllers/user-devices-controller.coffee", context
     @template "src/controllers/_octoblu-auth-controller.coffee", "src/controllers/octoblu-auth-controller.coffee", context
+    @template "src/config-generators/_credentials-device-create-config-generator.coffee", "src/config-generators/credentials-device-create-config-generator.coffee", context
+    @template "src/config-generators/_credentials-device-update-config-generator.coffee", "src/config-generators/credentials-device-update-config-generator.coffee", context
+    @template "src/config-generators/_user-device-config-generator.coffee", "src/config-generators/user-device-config-generator.coffee", context
     @template "src/models/_credentials-device.coffee", "src/models/credentials-device.coffee", context
     @template "src/services/_credentials-device-service.coffee", "src/services/credentials-device-service.coffee", context
     @template "test/_mocha.opts", "test/mocha.opts", context

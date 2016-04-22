@@ -1,6 +1,7 @@
 _ = require 'lodash'
 MeshbluHTTP = require 'meshblu-http'
 CredentialsDevice = require '../models/credentials-device'
+credentialsDeviceCreateGenerator = require '../config-generators/credentials-device-create-config-generator'
 
 class CredentialsDeviceService
   constructor: ({@meshbluConfig, @serviceUrl}) ->
@@ -23,26 +24,14 @@ class CredentialsDeviceService
     @meshblu.search 'endo.clientID': clientID, {}, (error, devices) =>
       return callback error if error?
       return callback null, _.first devices unless _.isEmpty devices
-      @meshblu.register @newRecord(clientID), callback
+      record = credentialsDeviceCreateGenerator {clientID: clientID, serviceUuid: @uuid}
+      @meshblu.register record, callback
 
   _getCredentialsDevice: ({uuid}, callback) =>
     @meshblu.generateAndStoreToken uuid, (error, {token}={}) =>
       return callback error if error?
       meshbluConfig = _.defaults {uuid, token}, @meshbluConfig
       return callback null, new CredentialsDevice {meshbluConfig, @serviceUrl}
-
-  newRecord: (clientID) =>
-    return {
-      endo:
-        clientID: clientID
-      meshblu:
-        version: '2.0.0'
-        whitelists:
-          discover:
-            view: [{ uuid: @uuid}]
-          configure:
-            update: [{ uuid: @uuid}]
-    }
 
   _userError: (message, code) =>
     error = new Error message
