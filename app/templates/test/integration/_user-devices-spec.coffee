@@ -169,6 +169,9 @@ describe 'Sample Spec', ->
           .post '/devices'
           .send
             type: "endo-<%= instancePrefix %>"
+            octoblu:
+              flow:
+                forwardMetadata: true
             meshblu:
               version: '2.0.0'
               whitelists:

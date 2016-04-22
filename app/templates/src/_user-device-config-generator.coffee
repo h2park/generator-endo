@@ -1,5 +1,8 @@
 module.exports = ({authorizedUuid, credentialsUuid}) ->
   type: "endo-<%= instancePrefix %>"
+  octoblu:
+    flow:
+      forwardMetadata: true
   meshblu:
     version: '2.0.0'
     whitelists:
