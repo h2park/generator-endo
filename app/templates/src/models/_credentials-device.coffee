@@ -12,7 +12,20 @@ class CredentialsDevice
     @meshblu = new MeshbluHTTP meshbluConfig
 
   createUserDevice: ({authorizedUuid}, callback) =>
-    @meshblu.register userDeviceConfigGenerator({authorizedUuid}), callback
+    userDeviceConfig = userDeviceConfigGenerator authorizedUuid: authorizedUuid, credentialsUuid: @uuid
+
+    @meshblu.register userDeviceConfig, (error, userDevice) =>
+      return callback error if error?
+
+      subscription = {subscriberUuid: @uuid, emitterUuid: userDevice.uuid, type: 'message.received'}
+      @meshblu.createSubscription subscription, (error) =>
+        return callback error if error?
+        return callback null, userDevice
+
+  getUserDevices: (callback) =>
+    @meshblu.subscriptions @uuid, (error, subscriptions) =>
+      return callback error if error?
+      return callback null, @_userDevicesFromSubscriptions subscriptions
 
   getUuid: => @uuid
 
@@ -25,17 +38,10 @@ class CredentialsDevice
 
     @meshblu.updateDangerously @uuid, update, callback
 
-  getUserDevices: (callback) =>
-    @meshblu.subscriptions @uuid, (error, subscriptions) =>
-      return callback error if error?
-      return callback null, @_userDevicesFromSubscriptions subscriptions
-
   _userDevicesFromSubscriptions: (subscriptions) =>
     _(subscriptions)
       .filter type: 'message.received'
-      .map ({uuid}) => {uuid}
+      .map ({emitterUuid}) => {uuid: emitterUuid}
       .value()
-
-
 
 module.exports = CredentialsDevice

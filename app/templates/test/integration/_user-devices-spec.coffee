@@ -72,9 +72,9 @@ describe 'Sample Spec', ->
           .get '/v2/devices/cred-uuid/subscriptions'
           .set 'Authorization', "Basic #{credentialsDeviceAuth}"
           .reply 200, [
-            {uuid: 'first-user-uuid', type: 'message.received'}
-            {uuid: 'second-user-uuid',type: 'message.received'}
-            {uuid: 'whatever-user-uuid', type: 'message.sent'}
+            {emitterUuid: 'first-user-uuid', type: 'message.received'}
+            {emitterUuid: 'second-user-uuid',type: 'message.received'}
+            {emitterUuid: 'whatever-user-uuid', type: 'message.sent'}
           ]
 
         options =
@@ -184,12 +184,16 @@ describe 'Sample Spec', ->
                   view: [{uuid: 'some-uuid'}]
                   as: [{uuid: 'some-uuid'}]
                 message:
-                  as: [{uuid: 'some-uuid'}]
-                  received: [{uuid: 'some-uuid'}]
+                  as: [{uuid: 'some-uuid'}, {uuid: 'cred-uuid'}]
+                  received: [{uuid: 'some-uuid'}, {uuid: 'cred-uuid'}]
                   sent: [{uuid: 'some-uuid'}]
                   from: [{uuid: 'some-uuid'}]
+          .reply 201, uuid: 'user-device-uuid', token: 'user-device-token'
 
-          .reply 200, uuid: 'cred-uuid', endo: {authorizedUuid: 'some-uuid'}
+        @createMessageReceivedSubscription = @meshblu
+          .post '/v2/devices/cred-uuid/subscriptions/user-device-uuid/message.received'
+          .set 'Authorization', "Basic #{credentialsDeviceAuth}"
+          .reply 201
 
         # @meshblu
         #   .post '/devices/cred-uuid/tokens'
@@ -214,8 +218,14 @@ describe 'Sample Spec', ->
         request.post '/cred-uuid/user-devices', options, (error, @response, @body) =>
           done error
 
+      it 'should create the user device', ->
+        @createUserDevice.done()
+
+      it "should subscribe the credentials-device to the user device's received messages", ->
+        @createMessageReceivedSubscription.done()
+
       it 'should return a 201', ->
         expect(@response.statusCode).to.equal 201
 
-      it 'should create the user device', ->
-        @createUserDevice.done()
+      it 'should return the user device', ->
+        expect(@body).to.deep.equal uuid: 'user-device-uuid', token: 'user-device-token'
