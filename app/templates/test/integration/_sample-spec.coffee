@@ -24,6 +24,7 @@ describe 'Sample Spec', ->
 
     serverOptions =
       logFn: ->
+      messageHandlers: {}
       apiStrategy: @apiStrategy
       disableLogging: true
       meshbluConfig:

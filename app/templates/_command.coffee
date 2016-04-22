@@ -1,7 +1,8 @@
-_             = require 'lodash'
-MeshbluConfig = require 'meshblu-config'
-Server        = require './src/server'
-ApiStrategy   = require 'passport-<%= instancePrefix %>'
+_               = require 'lodash'
+MeshbluConfig   = require 'meshblu-config'
+Server          = require './src/server'
+ApiStrategy     = require 'passport-<%= instancePrefix %>'
+MessageHandlers = require './src/message-handlers'
 
 class Command
   getOptions: =>
@@ -19,11 +20,12 @@ class Command
       next null, {clientSecret: {token, tokenSecret}, clientID: profile.id}
 
     return {
-      port:           process.env.PORT || 80
-      disableLogging: process.env.DISABLE_LOGGING == "true"
-      meshbluConfig:  new MeshbluConfig().toJSON()
-      apiStrategy:    apiStrategy
-      serviceUrl:     process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
+      port:            process.env.PORT || 80
+      disableLogging:  process.env.DISABLE_LOGGING == "true"
+      meshbluConfig:   new MeshbluConfig().toJSON()
+      apiStrategy:     apiStrategy
+      serviceUrl:      process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
+      messageHandlers: new MessageHandlers
       octobluOauthOptions:
         clientID:         process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_ID
         clientSecret:     process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_SECRET

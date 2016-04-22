@@ -69,8 +69,10 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "_package.json", "package.json", context
     @template "_endo-message-schema.json", "endo-message-schema.json", context
     @template "schemas/_hello-schema.json", "schemas/hello-schema.json", context
-    @template "src/_server.coffee", "src/server.coffee", context
+    @template "schemas/_namaste-schema.json", "schemas/namaste-schema.json", context
+    @template "src/_message-handlers.coffee", "src/message-handlers.coffee", context
     @template "src/_router.coffee", "src/router.coffee", context
+    @template "src/_server.coffee", "src/server.coffee", context
     @template "src/controllers/_controller.coffee", "src/controllers/#{filePrefix}-controller.coffee", context
     @template "src/controllers/_credentials-device-controller.coffee", "src/controllers/credentials-device-controller.coffee", context
     @template "src/controllers/_octoblu-auth-controller.coffee", "src/controllers/octoblu-auth-controller.coffee", context

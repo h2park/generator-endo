@@ -5,18 +5,25 @@ path        = require 'path'
 
 ENDO_MESSAGE_INVALID = 'Message does not match endo schema'
 JOB_TYPE_UNSUPPORTED = 'That jobType is not supported'
+JOB_TYPE_UNIMPLEMENTED = 'That jobType has not yet been implemented'
 MESSAGE_DATA_INVALID = 'Message data does not match schema for jobType'
 
 class MessagesService
-  constructor: ->
+  constructor: ({@messageHandlers}) ->
+    throw new Error 'messageHandlers are required' unless @messageHandlers
+
     @endoMessageSchema = @_getEndoMessageSchemaSync()
     @schemas = @_getSchemasSync()
     @validator = new Validator
 
   send: ({auth,message}, callback) =>
-    return callback @_userError(ENDO_MESSAGE_INVALID, 422) unless @_isValidEndoMessage message
-    return callback @_userError(JOB_TYPE_UNSUPPORTED, 422) unless @_isSupportedJobType message.metadata.jobType
-    return callback @_userError(MESSAGE_DATA_INVALID, 422) unless @_isValidMessageData message.metadata.jobType, message.data
+    data    = message?.data
+    jobType = message?.metadata?.jobType
+    return callback @_userError(ENDO_MESSAGE_INVALID,   422) unless @_isValidEndoMessage message
+    return callback @_userError(JOB_TYPE_UNSUPPORTED,   422) unless @_isSupportedJobType jobType
+    return callback @_userError(MESSAGE_DATA_INVALID,   422) unless @_isValidMessageData jobType, message.data
+    return callback @_userError(JOB_TYPE_UNIMPLEMENTED, 501) unless @_isImplemented    jobType
+    @messageHandlers[jobType]()
     callback()
 
   _getEndoMessageSchemaSync: =>
@@ -32,6 +39,9 @@ class MessagesService
         filepath = path.join directory, filename
         schemaName = _.replace filename, /-schema.json$/, ''
         schemas[schemaName] = JSON.parse fs.readFileSync(filepath, 'utf8')
+
+  _isImplemented: (jobType) =>
+    _.isFunction @messageHandlers[jobType]
 
   _isSupportedJobType: (jobType) =>
     @schemas[jobType]?

@@ -27,8 +27,10 @@ describe 'app', ->
       src/config-generators/user-device-config-generator.coffee
       endo-message-schema.json
       schemas/hello-schema.json
-      src/server.coffee
+      schemas/namaste-schema.json
+      src/message-handlers.coffee
       src/router.coffee
+      src/server.coffee
       src/controllers/app-controller.coffee
       src/controllers/messages-controller.coffee
       src/controllers/octoblu-auth-controller.coffee

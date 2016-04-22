@@ -14,6 +14,7 @@ describe 'Sample Spec', ->
 
     serverOptions =
       logFn: ->
+      messageHandlers: {}
       port: undefined,
       disableLogging: true
       octobluOauthOptions:

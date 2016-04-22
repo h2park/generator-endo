@@ -136,5 +136,24 @@ describe 'Sample Spec', ->
         it 'should return a 201', ->
           expect(@response.statusCode).to.equal 201
 
-        xit 'should call the hello messageHandler with the message and auth', ->
+        it 'should call the hello messageHandler with the message and auth', ->
           expect(@messageHandlers.hello).to.have.been.called
+
+      describe 'when called with a valid message, but the handler does not implement the method', ->
+        beforeEach (done) ->
+          options =
+            baseUrl: "http://localhost:#{@serverPort}"
+            json:
+              metadata:
+                jobType: 'namaste'
+              data:
+                greeting: 'hola'
+            auth:
+              username: 'cred-uuid'
+              password: 'cred-token'
+
+          request.post '/messages', options, (error, @response, @body) =>
+            done error
+
+        it 'should return a 501', ->
+          expect(@response.statusCode).to.equal 501
