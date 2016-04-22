@@ -15,7 +15,7 @@ Router             = require './router'
 CredentialsDeviceService = require './services/credentials-device-service'
 
 class Server
-  constructor: ({@disableLogging, @octobluOauthOptions, @port, @apiStrategy, @serviceUrl, @meshbluConfig})->
+  constructor: ({@disableLogging, @octobluOauthOptions, @port, @apiStrategy, @serviceUrl, @meshbluConfig, @logFn})->
     throw new Error('meshbluConfig is required') unless @meshbluConfig?
     throw new Error('octobluOauthOptions are required') unless @octobluOauthOptions?
     throw new Error('apiStrategy is required') unless @apiStrategy?
@@ -43,7 +43,7 @@ class Server
     app.use passport.session()
     app.use bodyParser.urlencoded limit: '1mb', extended : true
     app.use bodyParser.json limit : '1mb'
-    app.use sendError()
+    app.use sendError {@logFn}
     app.options '*', cors()
 
     credentialsDeviceService = new CredentialsDeviceService {@meshbluConfig, @serviceUrl}

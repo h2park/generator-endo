@@ -23,6 +23,7 @@ describe 'Sample Spec', ->
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
 
     serverOptions =
+      logFn: ->
       apiStrategy: @apiStrategy
       disableLogging: true
       meshbluConfig:

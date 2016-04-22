@@ -13,6 +13,7 @@ describe 'Sample Spec', ->
     @messageHandlers = hello: sinon.stub()
 
     serverOptions =
+      logFn: ->
       port: undefined,
       disableLogging: true
       octobluOauthOptions:
@@ -88,6 +89,27 @@ describe 'Sample Spec', ->
             auth:
               username: 'cred-uuid'
               password: 'cred-token'
+
+          request.post '/messages', options, (error, @response, @body) =>
+            done error
+
+        it 'should return a 422', ->
+          expect(@response.statusCode).to.equal 422
+
+      describe 'when called with valid metadata, valid jobType, but invalid data', ->
+        beforeEach (done) ->
+          options =
+            baseUrl: "http://localhost:#{@serverPort}"
+            auth:
+              username: 'cred-uuid'
+              password: 'cred-token'
+            json:
+              metadata:
+                jobType: 'hello'
+              data:
+                greeting: {
+                  salutation: 'hail fellow well met'
+                }
 
           request.post '/messages', options, (error, @response, @body) =>
             done error

@@ -13,6 +13,7 @@ describe 'Sample Spec', ->
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
 
     serverOptions =
+      logFn: ->
       port: undefined,
       disableLogging: true
       octobluOauthOptions:
