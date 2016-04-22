@@ -201,6 +201,11 @@ describe 'Sample Spec', ->
               'endo.clientSecret':   'oauth_verifier'
           .reply 204
 
+        @createMessageReceivedSubscription = @meshblu
+          .post '/v2/devices/cred-uuid/subscriptions/cred-uuid/message.received'
+          .set 'Authorization', "Basic #{credentialsDeviceAuth}"
+          .reply 201
+
         options =
           uri: '/auth/<%= instancePrefix %>/callback'
           baseUrl: "http://localhost:#{@serverPort}"
@@ -220,6 +225,9 @@ describe 'Sample Spec', ->
 
       it 'should update the credentials device with the new clientSecret and authorizedUuid', ->
         @updateCredentialsDevice.done()
+
+      it 'should subscribe to its own received messages', ->
+        @createMessageReceivedSubscription.done()
 
       it 'should return a 302', ->
         expect(@response.statusCode).to.equal 302
@@ -258,6 +266,11 @@ describe 'Sample Spec', ->
               'endo.clientSecret':   'oauth_verifier'
           .reply 204
 
+        @createMessageReceivedSubscription = @meshblu
+          .post '/v2/devices/cred-uuid/subscriptions/cred-uuid/message.received'
+          .set 'Authorization', "Basic #{credentialsDeviceAuth}"
+          .reply 201
+
         options =
           uri: '/auth/<%= instancePrefix %>/callback'
           baseUrl: "http://localhost:#{@serverPort}"
@@ -274,6 +287,9 @@ describe 'Sample Spec', ->
 
       it 'should update the credentials device with the new clientSecret and authorizedUuid', ->
         @updateCredentialsDevice.done()
+
+      it 'should subscribe to its own received messages', ->
+        @createMessageReceivedSubscription.done()
 
       it 'should return a 302', ->
         expect(@response.statusCode).to.equal 302

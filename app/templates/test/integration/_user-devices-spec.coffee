@@ -195,20 +195,6 @@ describe 'Sample Spec', ->
           .set 'Authorization', "Basic #{credentialsDeviceAuth}"
           .reply 201
 
-        # @meshblu
-        #   .post '/devices/cred-uuid/tokens'
-        #   .set 'Authorization', "Basic #{serviceAuth}"
-        #   .reply 200, uuid: 'cred-uuid', token: 'cred-token2'
-        #
-        # @meshblu
-        #   .get '/v2/devices/cred-uuid/subscriptions'
-        #   .set 'Authorization', "Basic #{credentialsDeviceAuth}"
-        #   .reply 200, [
-        #     {uuid: 'first-user-uuid', type: 'message.received'}
-        #     {uuid: 'second-user-uuid',type: 'message.received'}
-        #     {uuid: 'whatever-user-uuid', type: 'message.sent'}
-        #   ]
-        #
         options =
           baseUrl: "http://localhost:#{@serverPort}"
           json: true

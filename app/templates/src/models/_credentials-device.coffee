@@ -36,7 +36,12 @@ class CredentialsDevice
         'endo.authorizedUuid': authorizedUuid
         'endo.clientSecret'  : encryption.encryptOptions clientSecret
 
-    @meshblu.updateDangerously @uuid, update, callback
+    @meshblu.updateDangerously @uuid, update, (error) =>
+      return callback error if error?
+      subscription = {subscriberUuid: @uuid, emitterUuid: @uuid, type: 'message.received'}
+      @meshblu.createSubscription subscription, (error) =>
+        return callback error if error?
+        return callback()
 
   _userDevicesFromSubscriptions: (subscriptions) =>
     _(subscriptions)
