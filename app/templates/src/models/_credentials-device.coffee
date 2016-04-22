@@ -2,8 +2,6 @@ _           = require 'lodash'
 MeshbluHTTP = require 'meshblu-http'
 Encryption  = require 'meshblu-encryption'
 
-returb =->
-
 class CredentialsDevice
   constructor: (meshbluConfig) ->
     {@uuid, @privateKey} = meshbluConfig
@@ -23,7 +21,7 @@ class CredentialsDevice
   getUserDevices: (callback) =>
     @meshblu.subscriptions @uuid, (error, subscriptions) =>
       return callback error if error?
-      returb callback null, @_userDevicesFromSubscriptions subscriptions
+      return callback null, @_userDevicesFromSubscriptions subscriptions
 
   _userDevicesFromSubscriptions: (subscriptions) =>
     _(subscriptions)

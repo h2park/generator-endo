@@ -9,7 +9,6 @@ Server       = require '../../src/server'
 describe 'Sample Spec', ->
   beforeEach (done) ->
     @meshblu = shmock 0xd00d
-    @oauth = shmock 0xcafe
 
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
 
@@ -44,51 +43,100 @@ describe 'Sample Spec', ->
     @server.stop done
 
   afterEach (done) ->
-    @oauth.close done
-
-  afterEach (done) ->
     @meshblu.close done
 
-  describe 'On GET /cred-uuid/user-devices', ->
-    beforeEach (done) ->
-      userAuth = new Buffer('some-uuid:some-token').toString 'base64'
-      serviceAuth = new Buffer('peter:i-could-eat').toString 'base64'
-      credentialsDeviceAuth = new Buffer('cred-uuid:cred-token2').toString 'base64'
+  describe 'when authorized', ->
+    describe 'On GET /cred-uuid/user-devices', ->
+      beforeEach (done) ->
+        userAuth = new Buffer('some-uuid:some-token').toString 'base64'
+        serviceAuth = new Buffer('peter:i-could-eat').toString 'base64'
+        credentialsDeviceAuth = new Buffer('cred-uuid:cred-token2').toString 'base64'
 
-      @meshblu
-        .get '/v2/whoami'
-        .set 'Authorization', "Basic #{userAuth}"
-        .reply 200, uuid: 'some-uuid', token: 'some-token'
+        @meshblu
+          .get '/v2/whoami'
+          .set 'Authorization', "Basic #{userAuth}"
+          .reply 200, uuid: 'some-uuid', token: 'some-token'
 
-      @meshblu
-        .post '/devices/cred-uuid/tokens'
-        .set 'Authorization', "Basic #{serviceAuth}"
-        .reply 200, uuid: 'cred-uuid', token: 'cred-token2'
+        @meshblu
+          .post '/search/devices'
+          .send uuid: 'cred-uuid', 'endo.authorizedUuid': 'some-uuid'
+          .set 'Authorization', "Basic #{serviceAuth}"
+          .reply 200, uuid: 'cred-uuid', endo: {authorizedUuid: 'some-uuid'}
 
-      @meshblu
-        .get '/v2/devices/cred-uuid/subscriptions'
-        .set 'Authorization', "Basic #{credentialsDeviceAuth}"
-        .reply 200, [
-          {uuid: 'first-user-uuid', type: 'message.received'}
-          {uuid: 'second-user-uuid',type: 'message.received'}
-          {uuid: 'whatever-user-uuid', type: 'message.sent'}
+        @meshblu
+          .post '/devices/cred-uuid/tokens'
+          .set 'Authorization', "Basic #{serviceAuth}"
+          .reply 200, uuid: 'cred-uuid', token: 'cred-token2'
+
+        @meshblu
+          .get '/v2/devices/cred-uuid/subscriptions'
+          .set 'Authorization', "Basic #{credentialsDeviceAuth}"
+          .reply 200, [
+            {uuid: 'first-user-uuid', type: 'message.received'}
+            {uuid: 'second-user-uuid',type: 'message.received'}
+            {uuid: 'whatever-user-uuid', type: 'message.sent'}
+          ]
+
+        options =
+          baseUrl: "http://localhost:#{@serverPort}"
+          json: true
+          auth:
+            username: 'some-uuid'
+            password: 'some-token'
+
+        request.get '/cred-uuid/user-devices', options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 200', ->
+        expect(@response.statusCode).to.equal 200
+
+      it 'should return the list of user devices', ->
+        expect(@body).to.deep.equal [
+          {uuid: 'first-user-uuid'}
+          {uuid: 'second-user-uuid'}
         ]
 
-      options =
-        baseUrl: "http://localhost:#{@serverPort}"
-        json: true
-        auth:
-          username: 'some-uuid'
-          password: 'some-token'
+  describe 'when inauthentic', ->
+    describe 'On GET /cred-uuid/user-devices', ->
+      beforeEach (done) ->
+        userAuth = new Buffer('some-uuid:some-token').toString 'base64'
+        serviceAuth = new Buffer('peter:i-could-eat').toString 'base64'
+        credentialsDeviceAuth = new Buffer('cred-uuid:cred-token2').toString 'base64'
 
-      request.get '/cred-uuid/user-devices', options, (error, @response, @body) =>
-        done error
+        @meshblu
+          .get '/v2/whoami'
+          .set 'Authorization', "Basic #{userAuth}"
+          .reply 200, uuid: 'some-uuid', token: 'some-token'
 
-    it 'should return a 200', ->
-      expect(@response.statusCode).to.equal 200
+        @meshblu
+          .post '/search/devices'
+          .send uuid: 'cred-uuid', 'endo.authorizedUuid': 'some-uuid'
+          .set 'Authorization', "Basic #{serviceAuth}"
+          .reply 200, []
 
-    it 'should return the list of user devices', ->
-      expect(@body).to.deep.equal [
-        {uuid: 'first-user-uuid'}
-        {uuid: 'second-user-uuid'}
-      ]
+        @meshblu
+          .post '/devices/cred-uuid/tokens'
+          .set 'Authorization', "Basic #{serviceAuth}"
+          .reply 200, uuid: 'cred-uuid', token: 'cred-token2'
+
+        @meshblu
+          .get '/v2/devices/cred-uuid/subscriptions'
+          .set 'Authorization', "Basic #{credentialsDeviceAuth}"
+          .reply 200, [
+            {uuid: 'first-user-uuid', type: 'message.received'}
+            {uuid: 'second-user-uuid',type: 'message.received'}
+            {uuid: 'whatever-user-uuid', type: 'message.sent'}
+          ]
+
+        options =
+          baseUrl: "http://localhost:#{@serverPort}"
+          json: true
+          auth:
+            username: 'some-uuid'
+            password: 'some-token'
+
+        request.get '/cred-uuid/user-devices', options, (error, @response, @body) =>
+          done error
+
+      it 'should return a 403', ->
+        expect(@response.statusCode).to.equal 403

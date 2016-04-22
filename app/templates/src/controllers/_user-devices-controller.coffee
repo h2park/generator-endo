@@ -3,7 +3,9 @@ class UserDevicesController
     throw new Error 'credentialsDeviceService is required' unless @credentialsDeviceService?
 
   list: (req, res) =>
-    @credentialsDeviceService.findByUuid req.params.credentialsDeviceUuid, (error, credentialsDevice) =>
+    {credentialsDeviceUuid} = req.params
+    authorizedUuid = req.meshbluAuth.uuid
+    @credentialsDeviceService.authorizedFindByUuid {authorizedUuid, credentialsDeviceUuid}, (error, credentialsDevice) =>
       return res.sendError error if error?
       credentialsDevice.getUserDevices (error, userDevices) =>
         return res.sendError error if error?
