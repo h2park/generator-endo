@@ -5,9 +5,13 @@ request      = require 'request'
 shmock       = require '@octoblu/shmock'
 MockStrategy = require '../mock-strategy'
 Server       = require '../../src/server'
+Encryption  = require 'meshblu-encryption'
 
-describe 'Sample Spec', ->
+describe 'messages', ->
   beforeEach (done) ->
+    @privateKey = fs.readFileSync "#{__dirname}/../data/private-key.pem", 'utf8'
+    @encryption = Encryption.fromPem @privateKey
+
     @meshblu = shmock 0xd00d
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
     @messageHandlers = hello: sinon.stub()
@@ -60,7 +64,7 @@ describe 'Sample Spec', ->
           .reply 200,
             uuid: 'cred-uuid'
             endo:
-              clientSecret: 'encryptedSecret'
+              clientSecret: @encryption.encryptOptions 'decryptedClientSecret'
 
         @meshblu
           .get '/v2/devices/cred-uuid'
@@ -68,7 +72,7 @@ describe 'Sample Spec', ->
           .reply 200,
             uuid: 'cred-uuid'
             endo:
-              clientSecret: 'encryptedSecret'
+              clientSecret: @encryption.encryptOptions 'decryptedClientSecret'
 
       describe 'when called with a message without metadata', ->
         beforeEach (done) ->
@@ -152,7 +156,7 @@ describe 'Sample Spec', ->
             data:
               greeting: 'hola'
             endo:
-              clientSecret: 'encryptedSecret'
+              clientSecret: 'decryptedClientSecret'
           }
 
       describe 'when called with a valid message, but the handler does not implement the method', ->

@@ -2,6 +2,7 @@ fs          = require 'fs'
 _           = require 'lodash'
 path        = require 'path'
 {Validator} = require 'jsonschema'
+Encryption = require 'meshblu-encryption'
 
 ENDO_MESSAGE_INVALID = 'Message does not match endo schema'
 JOB_TYPE_UNSUPPORTED = 'That jobType is not supported'
@@ -23,6 +24,11 @@ class MessagesService
     return callback @_userError(JOB_TYPE_UNSUPPORTED,   422) unless @_isSupportedJobType jobType
     return callback @_userError(MESSAGE_DATA_INVALID,   422) unless @_isValidMessageData jobType, message.data
     return callback @_userError(JOB_TYPE_UNIMPLEMENTED, 501) unless @_isImplemented    jobType
+
+    encryption = Encryption.fromJustGuess auth.privateKey
+    decryptedClientSecret = encryption.decryptOptions endo.clientSecret
+
+    endo = _.defaults {clientSecret: decryptedClientSecret}, endo
     @messageHandlers[jobType] {auth, data, endo}
     callback()
 
