@@ -29,8 +29,7 @@ class MessagesService
     decryptedClientSecret = encryption.decryptOptions endo.clientSecret
 
     endo = _.defaults {clientSecret: decryptedClientSecret}, endo
-    @messageHandlers[jobType] {auth, data, endo}
-    callback()
+    @messageHandlers[jobType] {auth, data, endo}, callback
 
   _getEndoMessageSchemaSync: =>
     filepath = path.join __dirname, '../../endo-message-schema.json'

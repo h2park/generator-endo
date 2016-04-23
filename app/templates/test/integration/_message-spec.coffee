@@ -14,7 +14,7 @@ describe 'messages', ->
 
     @meshblu = shmock 0xd00d
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
-    @messageHandlers = hello: sinon.stub()
+    @messageHandlers = hello: sinon.stub().yields()
 
     serverOptions =
       logFn: ->
