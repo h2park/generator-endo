@@ -14,7 +14,7 @@ describe 'messages', ->
 
     @meshblu = shmock 0xd00d
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
-    @messageHandlers = hello: sinon.stub().yields()
+    @messageHandlers = hello: sinon.stub()
 
     serverOptions =
       logFn: ->
@@ -57,10 +57,10 @@ describe 'messages', ->
       beforeEach ->
         userAuth = new Buffer('some-uuid:some-token').toString 'base64'
         serviceAuth = new Buffer('peter:i-could-eat').toString 'base64'
-        credentialsDeviceAuth = new Buffer('cred-uuid:cred-token').toString 'base64'
+        @credentialsDeviceAuth = new Buffer('cred-uuid:cred-token').toString 'base64'
         @meshblu
           .get '/v2/whoami'
-          .set 'Authorization', "Basic #{credentialsDeviceAuth}"
+          .set 'Authorization', "Basic #{@credentialsDeviceAuth}"
           .reply 200,
             uuid: 'cred-uuid'
             endo:
@@ -115,6 +115,11 @@ describe 'messages', ->
             auth:
               username: 'cred-uuid'
               password: 'cred-token'
+            headers:
+              'x-meshblu-route': JSON.stringify [
+                {"from": "flow-uuid", "to": "user-device", "type": "message.sent"}
+                {"from": "user-device", "to": "cred-uuid", "type": "message.received"}
+              ]
             json:
               metadata:
                 jobType: 'hello'
@@ -131,8 +136,26 @@ describe 'messages', ->
 
       describe 'when called with a valid message', ->
         beforeEach (done) ->
+          @messageHandlers.hello.yields null, 200, whatever: 'this is a response'
+          @responseHandler = @meshblu
+            .post '/messages'
+            .set 'Authorization', "Basic #{@credentialsDeviceAuth}"
+            .set 'x-meshblu-as', 'user-device'
+            .send
+              devices: ['flow-uuid']
+              metadata:
+                code: 200
+              data:
+                whatever: 'this is a response'
+            .reply 201
+
           options =
             baseUrl: "http://localhost:#{@serverPort}"
+            headers:
+              'x-meshblu-route': JSON.stringify [
+                {"from": "flow-uuid", "to": "user-device", "type": "message.sent"}
+                {"from": "user-device", "to": "cred-uuid", "type": "message.received"}
+              ]
             json:
               metadata:
                 jobType: 'hello'
@@ -146,7 +169,10 @@ describe 'messages', ->
             done error
 
         it 'should return a 201', ->
-          expect(@response.statusCode).to.equal 201
+          expect(@response.statusCode).to.equal 201, JSON.stringify @body
+
+        it 'should return a 201', ->
+          @responseHandler.done()
 
         it 'should call the hello messageHandler with the message and auth', ->
           expect(@messageHandlers.hello).to.have.been.calledWith sinon.match {
