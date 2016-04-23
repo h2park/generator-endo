@@ -12,7 +12,7 @@ class Router
     throw new Error 'messageHandlers are required' unless @messageHandlers?
 
     @credentialsDeviceController = new CredentialsDeviceController {@credentialsDeviceService}
-    @messagesController    = new MessagesController {@messageHandlers}
+    @messagesController    = new MessagesController {@credentialsDeviceService, @messageHandlers}
     @octobluAuthController = new OctobluAuthController
     @userDevicesController = new UserDevicesController {@credentialsDeviceService}
 

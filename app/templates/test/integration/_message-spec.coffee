@@ -58,7 +58,15 @@ describe 'Sample Spec', ->
           .get '/v2/whoami'
           .set 'Authorization', "Basic #{credentialsDeviceAuth}"
           .reply 200,
-            uuid: 'cred-token'
+            uuid: 'cred-uuid'
+            endo:
+              clientSecret: 'encryptedSecret'
+
+        @meshblu
+          .get '/v2/devices/cred-uuid'
+          .set 'Authorization', "Basic #{serviceAuth}"
+          .reply 200,
+            uuid: 'cred-uuid'
             endo:
               clientSecret: 'encryptedSecret'
 
@@ -137,7 +145,15 @@ describe 'Sample Spec', ->
           expect(@response.statusCode).to.equal 201
 
         it 'should call the hello messageHandler with the message and auth', ->
-          expect(@messageHandlers.hello).to.have.been.called
+          expect(@messageHandlers.hello).to.have.been.calledWith sinon.match {
+            auth:
+              uuid: 'cred-uuid'
+              token: 'cred-token'
+            data:
+              greeting: 'hola'
+            endo:
+              clientSecret: 'encryptedSecret'
+          }
 
       describe 'when called with a valid message, but the handler does not implement the method', ->
         beforeEach (done) ->

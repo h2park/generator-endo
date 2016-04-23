@@ -14,6 +14,11 @@ class CredentialsDeviceService
       return callback @_userError('credentials device not found', 403) if _.isEmpty devices
       return @_getCredentialsDevice {uuid: credentialsDeviceUuid}, callback
 
+  getEndoByUuid: (uuid, callback) =>
+    @meshblu.device uuid, (error, {endo}={}) =>
+      return callback error if error?
+      return callback null, endo
+
   findOrCreate: (clientID, callback) =>
     @_findOrCreate clientID, (error, device) =>
       return callback error if error?

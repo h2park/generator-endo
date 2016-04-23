@@ -205,8 +205,9 @@ describe 'Sample Spec', ->
               'meshblu.forwarders.message.received': [{
                 type: 'webhook'
                 url: 'http://the-endo-url'
-                method: 'POST'}
-              ]
+                method: 'POST'
+                generateAndStoreToken: true
+              }]
 
           .reply 204
 
@@ -276,8 +277,9 @@ describe 'Sample Spec', ->
               'meshblu.forwarders.message.received': [{
                 type: 'webhook'
                 url: 'http://the-endo-url'
-                method: 'POST'}
-              ]
+                method: 'POST'
+                generateAndStoreToken: true
+              }]
           .reply 204
 
         @createMessageReceivedSubscription = @meshblu

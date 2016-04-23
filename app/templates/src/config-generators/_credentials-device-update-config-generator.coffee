@@ -8,4 +8,5 @@ module.exports = ({authorizedUuid, clientSecret, serviceUrl}) ->
       type: 'webhook'
       url:  serviceUrl
       method: 'POST'
+      generateAndStoreToken: true
     }]

@@ -16,14 +16,14 @@ class MessagesService
     @schemas = @_getSchemasSync()
     @validator = new Validator
 
-  send: ({auth,message}, callback) =>
+  send: ({auth, endo, message}, callback) =>
     data    = message?.data
     jobType = message?.metadata?.jobType
     return callback @_userError(ENDO_MESSAGE_INVALID,   422) unless @_isValidEndoMessage message
     return callback @_userError(JOB_TYPE_UNSUPPORTED,   422) unless @_isSupportedJobType jobType
     return callback @_userError(MESSAGE_DATA_INVALID,   422) unless @_isValidMessageData jobType, message.data
     return callback @_userError(JOB_TYPE_UNIMPLEMENTED, 501) unless @_isImplemented    jobType
-    @messageHandlers[jobType]()
+    @messageHandlers[jobType] {auth, data, endo}
     callback()
 
   _getEndoMessageSchemaSync: =>
