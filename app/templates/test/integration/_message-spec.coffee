@@ -89,7 +89,7 @@ describe 'messages', ->
             done error
 
         it 'should return a 422', ->
-          expect(@response.statusCode).to.equal 422
+          expect(@response.statusCode).to.equal 422, JSON.stringify(@body)
 
       describe 'when called with valid metadata, but an invalid jobType', ->
         beforeEach (done) ->
@@ -106,7 +106,7 @@ describe 'messages', ->
             done error
 
         it 'should return a 422', ->
-          expect(@response.statusCode).to.equal 422
+          expect(@response.statusCode).to.equal 422, JSON.stringify(@body)
 
       describe 'when called with valid metadata, valid jobType, but invalid data', ->
         beforeEach (done) ->
@@ -133,6 +133,30 @@ describe 'messages', ->
 
         it 'should return a 422', ->
           expect(@response.statusCode).to.equal 422
+
+      describe 'when called with a valid message, but the handler does not implement the method', ->
+        beforeEach (done) ->
+          options =
+            baseUrl: "http://localhost:#{@serverPort}"
+            headers:
+              'x-meshblu-route': JSON.stringify [
+                {"from": "flow-uuid", "to": "user-device", "type": "message.sent"}
+                {"from": "user-device", "to": "cred-uuid", "type": "message.received"}
+              ]
+            json:
+              metadata:
+                jobType: 'namaste'
+              data:
+                greeting: 'hola'
+            auth:
+              username: 'cred-uuid'
+              password: 'cred-token'
+
+          request.post '/messages', options, (error, @response, @body) =>
+            done error
+
+        it 'should return a 501', ->
+          expect(@response.statusCode).to.equal 501, JSON.stringify(@body)
 
       describe 'when called with a valid message', ->
         beforeEach (done) ->
@@ -171,7 +195,7 @@ describe 'messages', ->
         it 'should return a 201', ->
           expect(@response.statusCode).to.equal 201, JSON.stringify @body
 
-        it 'should return a 201', ->
+        it 'should respond to the message via meshblu', ->
           @responseHandler.done()
 
         it 'should call the hello messageHandler with the message and auth', ->
@@ -185,13 +209,31 @@ describe 'messages', ->
               clientSecret: 'decryptedClientSecret'
           }
 
-      describe 'when called with a valid message, but the handler does not implement the method', ->
+      describe 'when called with a valid message, but theres an error', ->
         beforeEach (done) ->
+          @messageHandlers.hello.yields new Error 'Something very bad happened'
+          @responseHandler = @meshblu
+            .post '/messages'
+            .set 'Authorization', "Basic #{@credentialsDeviceAuth}"
+            .set 'x-meshblu-as', 'user-device'
+            .send
+              devices: ['flow-uuid']
+              metadata:
+                code: 500
+                error:
+                  message: 'Something very bad happened'
+            .reply 201
+
           options =
             baseUrl: "http://localhost:#{@serverPort}"
+            headers:
+              'x-meshblu-route': JSON.stringify [
+                {"from": "flow-uuid", "to": "user-device", "type": "message.sent"}
+                {"from": "user-device", "to": "cred-uuid", "type": "message.received"}
+              ]
             json:
               metadata:
-                jobType: 'namaste'
+                jobType: 'hello'
               data:
                 greeting: 'hola'
             auth:
@@ -201,5 +243,19 @@ describe 'messages', ->
           request.post '/messages', options, (error, @response, @body) =>
             done error
 
-        it 'should return a 501', ->
-          expect(@response.statusCode).to.equal 501
+        it 'should call the hello messageHandler with the message and auth', ->
+          expect(@messageHandlers.hello).to.have.been.calledWith sinon.match {
+            auth:
+              uuid: 'cred-uuid'
+              token: 'cred-token'
+            data:
+              greeting: 'hola'
+            endo:
+              clientSecret: 'decryptedClientSecret'
+          }
+
+        it 'should return a 500', ->
+          expect(@response.statusCode).to.equal 500, JSON.stringify @body
+
+        it 'should respond to the message with the error via meshblu', ->
+          @responseHandler.done()
