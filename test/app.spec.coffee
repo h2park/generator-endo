@@ -38,6 +38,8 @@ describe 'app', ->
       src/controllers/user-devices-controller.coffee
       src/services/credentials-device-service.coffee
       src/services/messages-service.coffee
+      src/strategies/octoblu-strategy.coffee
+      src/strategies/api-strategy.coffee
       test/integration/app-spec.coffee
       test/integration/message-spec.coffee
       test/integration/user-devices-spec.coffee

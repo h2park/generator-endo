@@ -19,17 +19,17 @@ class CredentialsDeviceService
       return callback error if error?
       return callback null, endo
 
-  findOrCreate: (clientID, callback) =>
-    @_findOrCreate clientID, (error, device) =>
+  findOrCreate: (resourceOwnerID, callback) =>
+    @_findOrCreate resourceOwnerID, (error, device) =>
       return callback error if error?
       @_getCredentialsDevice device, callback
 
-  _findOrCreate: (clientID, callback) =>
-    return callback new Error('clientID is required') unless clientID?
-    @meshblu.search 'endo.clientID': clientID, {}, (error, devices) =>
+  _findOrCreate: (resourceOwnerID, callback) =>
+    return callback new Error('resourceOwnerID is required') unless resourceOwnerID?
+    @meshblu.search 'endo.resourceOwnerID': resourceOwnerID, {}, (error, devices) =>
       return callback error if error?
       return callback null, _.first devices unless _.isEmpty devices
-      record = credentialsDeviceCreateGenerator {clientID: clientID, serviceUuid: @uuid}
+      record = credentialsDeviceCreateGenerator {resourceOwnerID: resourceOwnerID, serviceUuid: @uuid}
       @meshblu.register record, callback
 
   _getCredentialsDevice: ({uuid}, callback) =>

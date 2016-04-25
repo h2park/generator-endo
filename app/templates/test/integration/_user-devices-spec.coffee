@@ -11,22 +11,15 @@ describe 'Sample Spec', ->
     @meshblu = shmock 0xd00d
 
     @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
+    @octobluStrategy = new MockStrategy name: 'octoblu'
 
     serverOptions =
       logFn: ->
       messageHandlers: {}
       port: undefined,
       disableLogging: true
-      octobluOauthOptions:
-        clientID: 'client-id'
-        clientSecret: '12345'
-        authorizationURL: 'http://oauth.octoblu.xxx/authorize'
-        tokenURL: "http://localhost:#{0xcafe}/access_token"
-        passReqToCallback: true
-        meshbluConfig:
-          server: 'localhost'
-          port: 0xd00d
       apiStrategy: @apiStrategy
+      octobluStrategy: @octobluStrategy
       serviceUrl: 'http://octoblu.xxx'
       meshbluConfig:
         server: 'localhost'

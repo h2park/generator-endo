@@ -13,19 +13,22 @@ describe 'Sample Spec', ->
     encryption = Encryption.fromPem @privateKey
 
     decryptClientSecret = (req, res, next) =>
-      return next() unless req.body?.$set?['endo.clientSecret']?
-      req.body.$set['endo.clientSecret'] = encryption.decryptOptions req.body.$set['endo.clientSecret']
+      return next() unless req.body?.$set?['endo.resourceOwnerSecrets']?
+      req.body.$set['endo.resourceOwnerSecrets'] = encryption.decryptOptions req.body.$set['endo.resourceOwnerSecrets']
       next()
 
     @meshblu = shmock 0xd00d, [decryptClientSecret]
-    @oauth = shmock 0xcafe
 
-    @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
+    @apiStub = sinon.stub().yields(new Error('Unauthorized'))
+    @apiStrategy = new MockStrategy name: 'api', @apiStub
+    @octobluStub = sinon.stub().yields(new Error('Unauthorized'))
+    @octobluStrategy = new MockStrategy name: 'octoblu', @octobluStub
 
     serverOptions =
       logFn: ->
       messageHandlers: {}
       apiStrategy: @apiStrategy
+      octobluStrategy: @octobluStrategy
       disableLogging: true
       meshbluConfig:
         server: 'localhost'
@@ -34,15 +37,6 @@ describe 'Sample Spec', ->
         token: 'i-could-eat'
         privateKey: @privateKey
       port: undefined,
-      octobluOauthOptions:
-        clientID: 'client-id'
-        clientSecret: '12345'
-        authorizationURL: 'http://oauth.octoblu.xxx/authorize'
-        tokenURL: "http://localhost:#{0xcafe}/access_token"
-        passReqToCallback: true
-        meshbluConfig:
-          server: 'localhost'
-          port: 0xd00d
       serviceUrl: "http://the-endo-url"
 
     @server = new Server serverOptions
@@ -54,9 +48,6 @@ describe 'Sample Spec', ->
 
   afterEach (done) ->
     @server.stop done
-
-  afterEach (done) ->
-    @oauth.close done
 
   afterEach (done) ->
     @meshblu.close done
@@ -89,28 +80,16 @@ describe 'Sample Spec', ->
       it 'should return a 302', ->
         expect(@response.statusCode).to.equal 302, @body
 
-      it 'should redirect to oauth.octoblu.xxx/authorize', ->
-        expect(@response.headers.location).to.equal(
-          'http://oauth.octoblu.xxx/authorize?response_type=code&client_id=client-id'
-        )
-
     describe 'On GET /auth/octoblu/callback with a valid code', ->
       beforeEach (done) ->
-        @oauth
-          .post '/access_token'
-          .send
-            code: new Buffer('client-id:u:t1').toString 'base64'
-            grant_type: 'authorization_code'
-            client_id: 'client-id'
-            client_secret: '12345'
-          .reply 200,
-            token_type:   "bearer"
-            access_token:  new Buffer('u:t2').toString 'base64'
-            expires_in:    3600
+        @octobluStub.yields null, {
+          uuid: 'u'
+          bearerToken: 'grizzly'
+        }
 
         @meshblu
           .get '/v2/whoami'
-          .set 'Authorization', "Bearer #{new Buffer('u:t2').toString 'base64'}"
+          .set 'Authorization', "Bearer grizzly"
           .reply 200, {}
 
         options =
@@ -125,13 +104,13 @@ describe 'Sample Spec', ->
       it 'should return a 302', ->
         expect(@response.statusCode).to.equal 302
 
-      it 'should redirect to /auth/twitter', ->
-        expect(@response.headers.location).to.equal '/auth/twitter'
+      it 'should redirect to /auth/api', ->
+        expect(@response.headers.location).to.equal '/auth/api'
 
       it 'should set the meshblu auth cookies', ->
-        expect(@response.headers['set-cookie']).to.contain 'meshblu_auth_bearer=dTp0Mg%3D%3D; Path=/'
+        expect(@response.headers['set-cookie']).to.contain 'meshblu_auth_bearer=grizzly; Path=/'
 
-  describe 'On GET /auth/<%= instancePrefix %>', ->
+  describe 'On GET /auth/api', ->
     beforeEach (done) ->
       userAuth = new Buffer('some-uuid:some-token').toString 'base64'
 
@@ -141,7 +120,7 @@ describe 'Sample Spec', ->
         .reply 200, uuid: 'some-uuid', token: 'some-token'
 
       options =
-        uri: '/auth/<%= instancePrefix %>'
+        uri: '/auth/api'
         baseUrl: "http://localhost:#{@serverPort}"
         followRedirect: false
         auth:
@@ -151,15 +130,22 @@ describe 'Sample Spec', ->
       request.get options, (error, @response, @body) =>
         done error
 
-    it 'should auth handler', ->
+    it 'should auth the octoblu device', ->
       @authDevice.done()
 
     it 'should return a 302', ->
       expect(@response.statusCode).to.equal 302
 
-  describe 'On GET /auth/<%= instancePrefix %>/callback', ->
+  describe 'On GET /auth/api/callback', ->
     describe 'when the credentials device does not exist', ->
       beforeEach (done) ->
+        @apiStub.yields null, {
+          resourceOwnerID: 'resource owner id'
+          resourceOwnerSecrets:
+            secret:       'resource owner secret'
+            refreshToken: 'resource owner refresh token'
+        }
+
         userAuth = new Buffer('some-uuid:some-token').toString 'base64'
         serviceAuth = new Buffer('peter:i-could-eat').toString 'base64'
         credentialsDeviceAuth = new Buffer('cred-uuid:cred-token2').toString 'base64'
@@ -172,7 +158,7 @@ describe 'Sample Spec', ->
         @meshblu
           .post '/search/devices'
           .set 'Authorization', "Basic #{serviceAuth}"
-          .send 'endo.clientID': 'oauth_token'
+          .send 'endo.resourceOwnerID': 'resource owner id'
           .reply 200, []
 
         @createCredentialsDevice = @meshblu
@@ -180,7 +166,7 @@ describe 'Sample Spec', ->
           .set 'Authorization', "Basic #{serviceAuth}"
           .send
             endo:
-              clientID: 'oauth_token'
+              resourceOwnerID: 'resource owner id'
             meshblu:
               version: '2.0.0'
               whitelists:
@@ -200,13 +186,15 @@ describe 'Sample Spec', ->
           .set 'Authorization', "Basic #{credentialsDeviceAuth}"
           .send
             '$set':
-              'endo.authorizedUuid': 'some-uuid'
-              'endo.clientSecret':   'oauth_verifier'
+              'endo.authorizedUuid':            'some-uuid'
+              'endo.resourceOwnerSecrets':
+                secret:       "resource owner secret"
+                refreshToken: "resource owner refresh token"
               'meshblu.forwarders.message.received': [{
                 type: 'webhook'
-                url: 'http://the-endo-url'
+                url: 'http://the-endo-url/messages'
                 method: 'POST'
-                generateAndStoreToken: true
+                generateAndForwardMeshbluCredentials: true
               }]
 
           .reply 204
@@ -217,30 +205,27 @@ describe 'Sample Spec', ->
           .reply 201
 
         options =
-          uri: '/auth/<%= instancePrefix %>/callback'
+          uri: '/auth/api/callback'
           baseUrl: "http://localhost:#{@serverPort}"
           followRedirect: false
           auth:
             username: 'some-uuid'
             password: 'some-token'
-          qs:
-            oauth_token: 'oauth_token'
-            oauth_verifier: 'oauth_verifier'
 
         request.get options, (error, @response, @body) =>
           done error
 
+      it 'should return a 302', ->
+        expect(@response.statusCode).to.equal 302, @body
+
       it 'should create a credentials device', ->
         @createCredentialsDevice.done()
 
-      it 'should update the credentials device with the new clientSecret and authorizedUuid', ->
+      it 'should update the credentials device with the new resourceOwnerSecret and authorizedUuid', ->
         @updateCredentialsDevice.done()
 
       it 'should subscribe to its own received messages', ->
         @createMessageReceivedSubscription.done()
-
-      it 'should return a 302', ->
-        expect(@response.statusCode).to.equal 302
 
       it 'should redirect to /cred-uuid/user-devices', ->
         expect(@response.headers.location).to.equal '/cred-uuid/user-devices'
@@ -251,6 +236,13 @@ describe 'Sample Spec', ->
         serviceAuth = new Buffer('peter:i-could-eat').toString 'base64'
         credentialsDeviceAuth = new Buffer('cred-uuid:cred-token2').toString 'base64'
 
+        @apiStub.yields null, {
+          resourceOwnerID: 'resource owner id'
+          resourceOwnerSecrets:
+            secret:       'resource owner secret'
+            refreshToken: 'resource owner refresh token'
+        }
+
         @meshblu
           .get '/v2/whoami'
           .set 'Authorization', "Basic #{userAuth}"
@@ -259,7 +251,7 @@ describe 'Sample Spec', ->
         @meshblu
           .post '/search/devices'
           .set 'Authorization', "Basic #{serviceAuth}"
-          .send 'endo.clientID': 'oauth_token'
+          .send 'endo.resourceOwnerID': 'resource owner id'
           .reply 200, [{uuid: 'cred-uuid', token: 'cred-token'}]
 
         @meshblu
@@ -273,12 +265,14 @@ describe 'Sample Spec', ->
           .send
             '$set':
               'endo.authorizedUuid': 'some-uuid'
-              'endo.clientSecret':   'oauth_verifier'
+              'endo.resourceOwnerSecrets':
+                secret:       'resource owner secret'
+                refreshToken: 'resource owner refresh token'
               'meshblu.forwarders.message.received': [{
                 type: 'webhook'
-                url: 'http://the-endo-url'
+                url: 'http://the-endo-url/messages'
                 method: 'POST'
-                generateAndStoreToken: true
+                generateAndForwardMeshbluCredentials: true
               }]
           .reply 204
 
@@ -288,7 +282,7 @@ describe 'Sample Spec', ->
           .reply 201
 
         options =
-          uri: '/auth/<%= instancePrefix %>/callback'
+          uri: '/auth/api/callback'
           baseUrl: "http://localhost:#{@serverPort}"
           followRedirect: false
           auth:
@@ -301,7 +295,7 @@ describe 'Sample Spec', ->
         request.get options, (error, @response, @body) =>
           done error
 
-      it 'should update the credentials device with the new clientSecret and authorizedUuid', ->
+      it 'should update the credentials device with the new resourceOwnerSecret and authorizedUuid', ->
         @updateCredentialsDevice.done()
 
       it 'should subscribe to its own received messages', ->

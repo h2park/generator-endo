@@ -1,7 +1,7 @@
 
-module.exports = ({clientID, serviceUuid}) ->
+module.exports = ({resourceOwnerID, serviceUuid}) ->
   endo:
-    clientID: clientID
+    resourceOwnerID: resourceOwnerID
   meshblu:
     version: '2.0.0'
     whitelists:

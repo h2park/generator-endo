@@ -30,12 +30,12 @@ class CredentialsDevice
 
   getUuid: => @uuid
 
-  update: ({authorizedUuid, clientSecret}, callback) =>
+  update: ({authorizedUuid, resourceOwnerSecrets}, callback) =>
     encryption = Encryption.fromJustGuess @privateKey
 
     update = credentialsDeviceUpdateGenerator({
       authorizedUuid: authorizedUuid
-      clientSecret: encryption.encryptOptions clientSecret
+      resourceOwnerSecrets: encryption.encryptOptions resourceOwnerSecrets
       serviceUrl: @serviceUrl
     })
 

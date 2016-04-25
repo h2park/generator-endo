@@ -2,13 +2,13 @@ class CredentialsDeviceController
   constructor: ({@credentialsDeviceService}) ->
 
   upsert: (req, res) =>
-    {clientID, clientSecret} = req.user
+    {resourceOwnerID, resourceOwnerSecrets} = req.user
     authorizedUuid = req.meshbluAuth.uuid
 
-    @credentialsDeviceService.findOrCreate clientID, (error, credentialsDevice) =>
+    @credentialsDeviceService.findOrCreate resourceOwnerID, (error, credentialsDevice) =>
       return res.sendError error if error?
 
-      credentialsDevice.update {clientSecret, authorizedUuid}, (error) =>
+      credentialsDevice.update {resourceOwnerSecrets, authorizedUuid}, (error) =>
         return res.sendError error if error?
         return res.redirect "/#{credentialsDevice.getUuid()}/user-devices"
 

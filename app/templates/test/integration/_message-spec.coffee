@@ -13,23 +13,16 @@ describe 'messages', ->
     @encryption = Encryption.fromPem @privateKey
 
     @meshblu = shmock 0xd00d
-    @apiStrategy = new MockStrategy name: '<%= instancePrefix %>'
+    @apiStrategy = new MockStrategy name: 'api'
+    @octobluStrategy = new MockStrategy name: 'octoblu'
     @messageHandlers = hello: sinon.stub()
 
     serverOptions =
       logFn: ->
       port: undefined,
       disableLogging: true
-      octobluOauthOptions:
-        clientID: 'client-id'
-        clientSecret: '12345'
-        authorizationURL: 'http://oauth.octoblu.xxx/authorize'
-        tokenURL: "http://localhost:#{0xcafe}/access_token"
-        passReqToCallback: true
-        meshbluConfig:
-          server: 'localhost'
-          port: 0xd00d
       apiStrategy: @apiStrategy
+      octobluStrategy: @octobluStrategy
       messageHandlers: @messageHandlers
       serviceUrl: 'http://octoblu.xxx'
       meshbluConfig:
@@ -64,7 +57,7 @@ describe 'messages', ->
           .reply 200,
             uuid: 'cred-uuid'
             endo:
-              clientSecret: @encryption.encryptOptions 'decryptedClientSecret'
+              resourceOwnerSecret: @encryption.encryptOptions 'decryptedClientSecret'
 
         @meshblu
           .get '/v2/devices/cred-uuid'
@@ -72,7 +65,7 @@ describe 'messages', ->
           .reply 200,
             uuid: 'cred-uuid'
             endo:
-              clientSecret: @encryption.encryptOptions 'decryptedClientSecret'
+              resourceOwnerSecret: @encryption.encryptOptions 'decryptedClientSecret'
 
       describe 'when called with a message without metadata', ->
         beforeEach (done) ->
@@ -206,7 +199,7 @@ describe 'messages', ->
             data:
               greeting: 'hola'
             endo:
-              clientSecret: 'decryptedClientSecret'
+              resourceOwnerSecret: 'decryptedClientSecret'
           }
 
       describe 'when called with a valid message, but theres an error', ->
@@ -251,7 +244,7 @@ describe 'messages', ->
             data:
               greeting: 'hola'
             endo:
-              clientSecret: 'decryptedClientSecret'
+              resourceOwnerSecret: 'decryptedClientSecret'
           }
 
         it 'should return a 500', ->

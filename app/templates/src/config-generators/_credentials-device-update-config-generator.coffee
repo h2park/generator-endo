@@ -1,12 +1,12 @@
 
 
-module.exports = ({authorizedUuid, clientSecret, serviceUrl}) ->
+module.exports = ({authorizedUuid, resourceOwnerSecrets, serviceUrl}) ->
   $set:
-    'endo.authorizedUuid': authorizedUuid
-    'endo.clientSecret'  : clientSecret
+    'endo.authorizedUuid':       authorizedUuid
+    'endo.resourceOwnerSecrets': resourceOwnerSecrets
     'meshblu.forwarders.message.received': [{
       type: 'webhook'
-      url:  serviceUrl
+      url:  "#{serviceUrl}/messages",
       method: 'POST'
-      generateAndStoreToken: true
+      generateAndForwardMeshbluCredentials: true
     }]

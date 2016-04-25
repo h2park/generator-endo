@@ -2,8 +2,12 @@ _ = require 'lodash'
 passport = require 'passport-strategy'
 
 class MockStrategy extends passport.Strategy
+  constructor: ({@name}, @verifier) ->
+    super
+
   authenticate: (req, options) -> # keep this guy skinny
-    return @success({clientID:req.query.oauth_token, clientSecret:req.query.oauth_verifier}) if req.query.oauth_token?
-    @fail message: 'no', 302
+    @verifier req, (error, user) => # keep this guy fat
+      return @fail message: error.message, 302 if error?
+      return @success user
 
 module.exports = MockStrategy

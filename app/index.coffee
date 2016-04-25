@@ -70,6 +70,7 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "_endo-message-schema.json", "endo-message-schema.json", context
     @template "schemas/_hello-schema.json", "schemas/hello-schema.json", context
     @template "schemas/_namaste-schema.json", "schemas/namaste-schema.json", context
+    @template "schemas/_userRepos-schema.json", "schemas/userRepos-schema.json", context
     @template "src/_message-handlers.coffee", "src/message-handlers.coffee", context
     @template "src/_router.coffee", "src/router.coffee", context
     @template "src/_server.coffee", "src/server.coffee", context
@@ -84,6 +85,8 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "src/models/_credentials-device.coffee", "src/models/credentials-device.coffee", context
     @template "src/services/_credentials-device-service.coffee", "src/services/credentials-device-service.coffee", context
     @template "src/services/_messages-service.coffee", "src/services/messages-service.coffee", context
+    @template "src/strategies/_octoblu-strategy.coffee", "src/strategies/octoblu-strategy.coffee", context
+    @template "src/strategies/_api-strategy.coffee", "src/strategies/api-strategy.coffee", context
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
     @template "test/_mock-strategy.coffee", "test/mock-strategy.coffee", context
