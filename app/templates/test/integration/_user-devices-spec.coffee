@@ -19,6 +19,7 @@ describe 'Sample Spec', ->
       port: undefined,
       disableLogging: true
       apiStrategy: @apiStrategy
+      deviceType: 'endo-github'
       octobluStrategy: @octobluStrategy
       serviceUrl: 'http://octoblu.xxx'
       meshbluConfig:
@@ -27,6 +28,14 @@ describe 'Sample Spec', ->
         uuid: 'peter'
         token: 'i-could-eat'
         privateKey: @privateKey
+
+    @meshblu
+      .get '/v2/whoami'
+      .set 'Authorization', "Basic cGV0ZXI6aS1jb3VsZC1lYXQ="
+      .reply 200, {
+        options:
+          imageUrl: "http://this-is-an-image.exe"
+      }
 
     @server = new Server serverOptions
 

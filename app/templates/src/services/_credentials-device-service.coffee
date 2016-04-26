@@ -4,7 +4,8 @@ CredentialsDevice = require '../models/credentials-device'
 credentialsDeviceCreateGenerator = require '../config-generators/credentials-device-create-config-generator'
 
 class CredentialsDeviceService
-  constructor: ({@meshbluConfig, @serviceUrl}) ->
+  constructor: ({@deviceType, @meshbluConfig, @serviceUrl}) ->
+    throw new Error('deviceType is required') unless @deviceType?
     @uuid = @meshbluConfig.uuid
     @meshblu = new MeshbluHTTP @meshbluConfig
 
@@ -36,7 +37,7 @@ class CredentialsDeviceService
     @meshblu.generateAndStoreToken uuid, (error, {token}={}) =>
       return callback error if error?
       meshbluConfig = _.defaults {uuid, token}, @meshbluConfig
-      return callback null, new CredentialsDevice {meshbluConfig, @serviceUrl}
+      return callback null, new CredentialsDevice {@deviceType, meshbluConfig, @serviceUrl}
 
   _userError: (message, code) =>
     error = new Error message

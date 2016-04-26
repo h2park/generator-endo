@@ -12,8 +12,8 @@ class Command
     apiStrategy     = new ApiStrategy process.env
     octobluStrategy = new OctobluStrategy process.env
 
-
     return {
+      deviceType:      '<%= appname %>'
       port:            process.env.PORT || 80
       disableLogging:  process.env.DISABLE_LOGGING == "true"
       meshbluConfig:   new MeshbluConfig().toJSON()

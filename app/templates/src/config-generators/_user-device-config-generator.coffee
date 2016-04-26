@@ -1,5 +1,5 @@
-module.exports = ({authorizedUuid, credentialsUuid}) ->
-  type: "endo-<%= instancePrefix %>"
+module.exports = ({authorizedUuid, credentialsUuid, deviceType}) ->
+  type: deviceType
   octoblu:
     flow:
       forwardMetadata: true

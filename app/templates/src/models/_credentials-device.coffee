@@ -8,12 +8,16 @@ credentialsDeviceUpdateGenerator = require '../config-generators/credentials-dev
 userDeviceConfigGenerator = require '../config-generators/user-device-config-generator'
 
 class CredentialsDevice
-  constructor: ({@serviceUrl, meshbluConfig}) ->
+  constructor: ({@deviceType, @serviceUrl, meshbluConfig}) ->
+    throw new Error('deviceType is required') unless @deviceType?
     {@uuid, @privateKey} = meshbluConfig
     @meshblu = new MeshbluHTTP meshbluConfig
 
   createUserDevice: ({authorizedUuid}, callback) =>
-    userDeviceConfig = userDeviceConfigGenerator authorizedUuid: authorizedUuid, credentialsUuid: @uuid
+    userDeviceConfig = userDeviceConfigGenerator
+      authorizedUuid: authorizedUuid
+      credentialsUuid: @uuid
+      deviceType: @deviceType
 
     @meshblu.register userDeviceConfig, (error, userDevice) =>
       return callback error if error?

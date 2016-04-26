@@ -8,18 +8,21 @@ errorHandler       = require 'errorhandler'
 meshbluHealthcheck = require 'express-meshblu-healthcheck'
 sendError          = require 'express-send-error'
 MeshbluConfig      = require 'meshblu-config'
+MeshbluHTTP       = require 'meshblu-http'
 OctobluStrategy    = require 'passport-octoblu'
 passport           = require 'passport'
 debug              = require('debug')('<%= appname %>:server')
 Router             = require './router'
 CredentialsDeviceService = require './services/credentials-device-service'
 
+
 class Server
   constructor: (options)->
-    {@apiStrategy, @meshbluConfig, @messageHandlers, @octobluStrategy, @serviceUrl} = options
+    {@apiStrategy, @deviceType, @meshbluConfig, @messageHandlers, @octobluStrategy, @serviceUrl} = options
     {@disableLogging, @logFn, @port} = options
 
     throw new Error('apiStrategy is required') unless @apiStrategy?
+    throw new Error('deviceType is required') unless @deviceType?
     throw new Error('meshbluConfig is required') unless @meshbluConfig?
     throw new Error('messageHandlers are required') unless @messageHandlers?
     throw new Error('octobluStrategy is required') unless @octobluStrategy?
@@ -49,12 +52,16 @@ class Server
     app.use sendError {@logFn}
     app.options '*', cors()
 
-    credentialsDeviceService = new CredentialsDeviceService {@meshbluConfig, @serviceUrl}
+    meshblu = new MeshbluHTTP @meshbluConfig
+    meshblu.whoami (error, device) =>
+      throw new Error('Could not authenticate with meshblu!') if error?
+      {imageUrl} = device.options
+      credentialsDeviceService = new CredentialsDeviceService {@deviceType, @meshbluConfig, @serviceUrl, imageUrl}
 
-    router = new Router {credentialsDeviceService, @meshbluConfig, @messageHandlers}
-    router.route app
+      router = new Router {credentialsDeviceService, @meshbluConfig, @messageHandlers}
+      router.route app
 
-    @server = app.listen @port, callback
+      @server = app.listen @port, callback
 
   stop: (callback) =>
     @server.close callback

@@ -23,6 +23,13 @@ describe 'Sample Spec', ->
     @apiStrategy = new MockStrategy name: 'api', @apiStub
     @octobluStub = sinon.stub().yields(new Error('Unauthorized'))
     @octobluStrategy = new MockStrategy name: 'octoblu', @octobluStub
+    @meshblu
+      .get '/v2/whoami'
+      .set 'Authorization', "Basic cGV0ZXI6aS1jb3VsZC1lYXQ="
+      .reply 200, {
+        options:
+          imageUrl: "http://this-is-an-image.exe"
+      }
 
     serverOptions =
       logFn: ->
@@ -30,6 +37,7 @@ describe 'Sample Spec', ->
       apiStrategy: @apiStrategy
       octobluStrategy: @octobluStrategy
       disableLogging: true
+      deviceType: 'endo-app'
       meshbluConfig:
         server: 'localhost'
         port: 0xd00d

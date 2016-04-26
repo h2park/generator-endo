@@ -17,6 +17,14 @@ describe 'messages', ->
     @octobluStrategy = new MockStrategy name: 'octoblu'
     @messageHandlers = hello: sinon.stub()
 
+    @meshblu
+      .get '/v2/whoami'
+      .set 'Authorization', "Basic cGV0ZXI6aS1jb3VsZC1lYXQ="
+      .reply 200, {
+        options:
+          imageUrl: "http://this-is-an-image.exe"
+      }
+
     serverOptions =
       logFn: ->
       port: undefined,
@@ -25,6 +33,7 @@ describe 'messages', ->
       octobluStrategy: @octobluStrategy
       messageHandlers: @messageHandlers
       serviceUrl: 'http://octoblu.xxx'
+      deviceType: 'endo-endor'
       meshbluConfig:
         server: 'localhost'
         port: 0xd00d
@@ -34,7 +43,7 @@ describe 'messages', ->
 
     @server = new Server serverOptions
 
-    @server.run (error) =>
+    @server.run (error) =>      
       return done error if error?
       @serverPort = @server.address().port
       done()
@@ -57,7 +66,7 @@ describe 'messages', ->
           .reply 200,
             uuid: 'cred-uuid'
             endo:
-              resourceOwnerSecret: @encryption.encryptOptions 'decryptedClientSecret'
+              resourceOwnerSecrets: @encryption.encryptOptions secret: 'decryptedClientSecret'
 
         @meshblu
           .get '/v2/devices/cred-uuid'
@@ -65,7 +74,7 @@ describe 'messages', ->
           .reply 200,
             uuid: 'cred-uuid'
             endo:
-              resourceOwnerSecret: @encryption.encryptOptions 'decryptedClientSecret'
+              resourceOwnerSecrets: @encryption.encryptOptions secret: 'decryptedClientSecret'
 
       describe 'when called with a message without metadata', ->
         beforeEach (done) ->
@@ -199,7 +208,8 @@ describe 'messages', ->
             data:
               greeting: 'hola'
             endo:
-              resourceOwnerSecret: 'decryptedClientSecret'
+              resourceOwnerSecrets:
+                secret: 'decryptedClientSecret'
           }
 
       describe 'when called with a valid message, but theres an error', ->
@@ -244,7 +254,8 @@ describe 'messages', ->
             data:
               greeting: 'hola'
             endo:
-              resourceOwnerSecret: 'decryptedClientSecret'
+              resourceOwnerSecrets:
+                secret: 'decryptedClientSecret'
           }
 
         it 'should return a 500', ->
