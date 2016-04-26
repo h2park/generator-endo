@@ -1,9 +1,11 @@
 _               = require 'lodash'
 MeshbluConfig   = require 'meshblu-config'
+path            = require 'path'
 Endo            = require 'endo-lib'
 OctobluStrategy = require 'endo-lib/octoblu-strategy'
 ApiStrategy     = require './src/strategies/api-strategy'
 MessageHandlers = require './src/message-handlers'
+SchemaLoader    = require './src/schema-loader'
 
 class Command
   getOptions: =>
@@ -12,16 +14,18 @@ class Command
     meshbluConfig   = new MeshbluConfig().toJSON()
     apiStrategy     = new ApiStrategy process.env
     octobluStrategy = new octobluStrategy process.env, meshbluConfig
+    schemaLoader    = new SchemaLoader schemaDir: path.join(__dirname, 'schemas')
 
     return {
+      apiStrategy:     apiStrategy
       deviceType:      '<%= appname %>'
-      port:            process.env.PORT || 80
       disableLogging:  process.env.DISABLE_LOGGING == "true"
       meshbluConfig:   meshbluConfig
-      apiStrategy:     apiStrategy
-      octobluStrategy: octobluStrategy
-      serviceUrl:      process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
       messageHandlers: new MessageHandlers
+      octobluStrategy: octobluStrategy
+      port:            process.env.PORT || 80
+      schemas:         schemaLoader.getSchemasSync()
+      serviceUrl:      process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
     }
 
   run: =>

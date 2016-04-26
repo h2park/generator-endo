@@ -67,34 +67,12 @@ class OctobluServiceGenerator extends yeoman.Base
       constantPrefix
     }
     @template "_package.json", "package.json", context
-    @template "_endo-message-schema.json", "endo-message-schema.json", context
     @template "schemas/_hello-schema.json", "schemas/hello-schema.json", context
     @template "schemas/_namaste-schema.json", "schemas/namaste-schema.json", context
     @template "src/_message-handlers.coffee", "src/message-handlers.coffee", context
-    @template "src/_router.coffee", "src/router.coffee", context
-    @template "src/_server.coffee", "src/server.coffee", context
-    @template "src/controllers/_credentials-device-controller.coffee", "src/controllers/credentials-device-controller.coffee", context
-    @template "src/controllers/_octoblu-auth-controller.coffee", "src/controllers/octoblu-auth-controller.coffee", context
-    @template "src/controllers/_messages-controller.coffee", "src/controllers/messages-controller.coffee", context
-    @template "src/controllers/_user-devices-controller.coffee", "src/controllers/user-devices-controller.coffee", context
-    @template "src/config-generators/_credentials-device-create-config-generator.coffee", "src/config-generators/credentials-device-create-config-generator.coffee", context
-    @template "src/config-generators/_credentials-device-update-config-generator.coffee", "src/config-generators/credentials-device-update-config-generator.coffee", context
-    @template "src/config-generators/_user-device-config-generator.coffee", "src/config-generators/user-device-config-generator.coffee", context
-    @template "src/models/_credentials-device.coffee", "src/models/credentials-device.coffee", context
-    @template "src/services/_credentials-device-service.coffee", "src/services/credentials-device-service.coffee", context
-    @template "src/services/_messages-service.coffee", "src/services/messages-service.coffee", context
-    @template "src/strategies/_octoblu-strategy.coffee", "src/strategies/octoblu-strategy.coffee", context
     @template "src/strategies/_api-strategy.coffee", "src/strategies/api-strategy.coffee", context
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
-    @template "test/_mock-strategy.coffee", "test/mock-strategy.coffee", context
-    @template "test/data/schemas/_test-hello-schema.json", "test/data/schemas/test-hello-schema.json", context
-    @template "test/data/schemas/_namaste-schema.json", "test/data/schemas/namaste-schema.json", context
-    @template "test/integration/_message-spec.coffee", "test/integration/message-spec.coffee", context
-    @template "test/integration/_sample-spec.coffee", "test/integration/#{filePrefix}-spec.coffee", context
-    @template "test/integration/_user-devices-spec.coffee", "test/integration/user-devices-spec.coffee", context
-    @template "test/data/_private-key.pem", "test/data/private-key.pem", context
-    @template "_index.js", "index.js", context
     @template "_command.js", "command.js", context
     @template "_command.coffee", "command.coffee", context
     @template "_coffeelint.json", "coffeelint.json", context
