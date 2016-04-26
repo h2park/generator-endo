@@ -25,6 +25,7 @@ describe 'app', ->
       schemas/hello-schema.json
       schemas/namaste-schema.json
       src/message-handlers.coffee
+      src/schema-loader.coffee
       src/strategies/api-strategy.coffee
       test/test_helper.coffee
       test/mocha.opts
