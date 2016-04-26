@@ -7,9 +7,13 @@ ApiStrategy     = require './src/api-strategy'
 MessageHandlers = require './src/message-handlers'
 SchemaLoader    = require './src/schema-loader'
 
+MISSING_SERVICE_URL = 'Missing required environment variable: ENDO_<%= constantPrefix %>_SERVICE_URL'
+MISSING_MANAGER_URL = 'Missing required environment variable: ENDO_<%= constantPrefix %>_MANAGER_URL'
+
 class Command
   getOptions: =>
-    throw new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_SERVICE_URL') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
+    throw new Error MISSING_SERVICE_URL if _.isEmpty process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
+    throw new Error MISSING_MANAGER_URL if _.isEmpty process.env.ENDO_<%= constantPrefix %>_MANAGER_URL
 
     meshbluConfig   = new MeshbluConfig().toJSON()
     apiStrategy     = new ApiStrategy process.env
@@ -26,6 +30,7 @@ class Command
       port:            process.env.PORT || 80
       schemas:         schemaLoader.getSchemasSync()
       serviceUrl:      process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
+      userDeviceManagerUrl: process.env.ENDO_<%= constantPrefix %>_MANAGER_URL
     }
 
   run: =>
