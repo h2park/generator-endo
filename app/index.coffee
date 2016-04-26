@@ -71,7 +71,7 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "schemas/_namaste-schema.json", "schemas/namaste-schema.json", context
     @template "src/_message-handlers.coffee", "src/message-handlers.coffee", context
     @template "src/_schema-loader.coffee", "src/schema-loader.coffee", context
-    @template "src/strategies/_api-strategy.coffee", "src/strategies/api-strategy.coffee", context
+    @template "src/_api-strategy.coffee", "src/api-strategy.coffee", context
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
     @template "_command.js", "command.js", context

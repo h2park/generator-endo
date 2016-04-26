@@ -3,7 +3,7 @@ MeshbluConfig   = require 'meshblu-config'
 path            = require 'path'
 Endo            = require 'endo-lib'
 OctobluStrategy = require 'endo-lib/octoblu-strategy'
-ApiStrategy     = require './src/strategies/api-strategy'
+ApiStrategy     = require './src/api-strategy'
 MessageHandlers = require './src/message-handlers'
 SchemaLoader    = require './src/schema-loader'
 
@@ -13,7 +13,7 @@ class Command
 
     meshbluConfig   = new MeshbluConfig().toJSON()
     apiStrategy     = new ApiStrategy process.env
-    octobluStrategy = new octobluStrategy process.env, meshbluConfig
+    octobluStrategy = new OctobluStrategy process.env, meshbluConfig
     schemaLoader    = new SchemaLoader schemaDir: path.join(__dirname, 'schemas')
 
     return {

@@ -1,3 +1,7 @@
+_    = require 'lodash'
+fs   = require 'fs'
+path = require 'path'
+
 class SchemaLoader
   constructor: ({@schemaDir}={}) ->
     throw new Error('schemaDir is required') unless @schemaDir
