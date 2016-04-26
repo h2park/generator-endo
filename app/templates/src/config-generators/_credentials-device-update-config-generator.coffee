@@ -1,5 +1,3 @@
-
-
 module.exports = ({authorizedUuid, resourceOwnerSecrets, serviceUrl}) ->
   $set:
     'endo.authorizedUuid':       authorizedUuid

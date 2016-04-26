@@ -56,7 +56,7 @@ class Server
     meshblu.whoami (error, device) =>
       throw new Error('Could not authenticate with meshblu!') if error?
       {imageUrl} = device.options
-      credentialsDeviceService = new CredentialsDeviceService {@deviceType, @meshbluConfig, @serviceUrl, imageUrl}
+      credentialsDeviceService = new CredentialsDeviceService {@deviceType, imageUrl, @meshbluConfig, @serviceUrl}
 
       router = new Router {credentialsDeviceService, @meshbluConfig, @messageHandlers}
       router.route app

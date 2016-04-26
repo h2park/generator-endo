@@ -173,6 +173,7 @@ describe 'Sample Spec', ->
           .post '/devices'
           .send
             type: "endo-<%= instancePrefix %>"
+            imageUrl: "http://this-is-an-image.exe"
             octoblu:
               flow:
                 forwardMetadata: true

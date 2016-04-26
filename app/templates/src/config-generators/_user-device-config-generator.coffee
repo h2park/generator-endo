@@ -1,5 +1,6 @@
-module.exports = ({authorizedUuid, credentialsUuid, deviceType}) ->
+module.exports = ({authorizedUuid, credentialsUuid, deviceType, imageUrl}) ->
   type: deviceType
+  imageUrl: imageUrl
   octoblu:
     flow:
       forwardMetadata: true
