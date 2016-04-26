@@ -43,7 +43,7 @@ describe 'messages', ->
 
     @server = new Server serverOptions
 
-    @server.run (error) =>      
+    @server.run (error) =>
       return done error if error?
       @serverPort = @server.address().port
       done()
