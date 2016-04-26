@@ -11,6 +11,7 @@ class MessagesController
     message = req.body
 
     @credentialsDeviceService.getEndoByUuid auth.uuid, (error, endo) =>
+      console.log error.message if error?
       return @respondWithError {auth, error, res, route} if error?
       @messageService.send {auth, endo, message}, (error, code, response) =>
         return @respondWithError {auth, error, res, route} if error?

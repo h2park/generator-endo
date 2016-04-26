@@ -31,7 +31,6 @@ describe 'app', ->
       src/message-handlers.coffee
       src/router.coffee
       src/server.coffee
-      src/controllers/app-controller.coffee
       src/controllers/messages-controller.coffee
       src/controllers/octoblu-auth-controller.coffee
       src/controllers/credentials-device-controller.coffee

@@ -4,8 +4,8 @@ PassportOctoblu = require 'passport-octoblu'
 
 class OctobluStrategy extends PassportOctoblu
   constructor: (env) ->
-    throw new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_ID')     if _.isEmpty process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_ID
-    throw new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_SECRET') if _.isEmpty process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_SECRET
+    throw new Error('Missing required environment variable: MESHBLU_UUID')  if _.isEmpty process.env.MESHBLU_UUID
+    throw new Error('Missing required environment variable: MESHBLU_TOKEN') if _.isEmpty process.env.MESHBLU_TOKEN
     throw new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL')     if _.isEmpty process.env.ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL
 
     options = {
