@@ -44,7 +44,7 @@ class Server
     app.use morgan 'dev', immediate: false unless @disableLogging
     app.use cors()
     app.use errorHandler()
-    app.use cookieSession secret: 'here, kitty, kitty'# @meshbluConfig.token
+    app.use cookieSession secret: @meshbluConfig.token
     app.use cookieParser()
     app.use passport.initialize()
     app.use passport.session()
