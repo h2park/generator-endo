@@ -9,8 +9,8 @@ class OctobluStrategy extends PassportOctoblu
     throw new Error('Missing required environment variable: ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL')     if _.isEmpty process.env.ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL
 
     options = {
-      clientID:         process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_ID
-      clientSecret:     process.env.ENDO_<%= constantPrefix %>_OCTOBLU_CLIENT_SECRET
+      clientID:         process.env.MESHBLU_UUID
+      clientSecret:     process.env.MESHBLU_TOKEN
       authorizationURL: "#{process.env.ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL}/authorize"
       tokenURL:         "#{process.env.ENDO_<%= constantPrefix %>_OCTOBLU_OAUTH_URL}/access_token"
       meshbluConfig:    new MeshbluConfig().toJSON()
