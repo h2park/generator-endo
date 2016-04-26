@@ -5,6 +5,7 @@ request      = require 'request'
 shmock       = require '@octoblu/shmock'
 MockStrategy = require '../mock-strategy'
 Server       = require '../../src/server'
+path         = require 'path'
 
 describe 'Sample Spec', ->
   beforeEach (done) ->
@@ -28,6 +29,8 @@ describe 'Sample Spec', ->
         uuid: 'peter'
         token: 'i-could-eat'
         privateKey: @privateKey
+
+      schemaDir: path.join __dirname, '../data/schemas'
 
     @meshblu
       .get '/v2/whoami'

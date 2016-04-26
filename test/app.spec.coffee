@@ -39,6 +39,8 @@ describe 'app', ->
       src/services/messages-service.coffee
       src/strategies/octoblu-strategy.coffee
       src/strategies/api-strategy.coffee
+      test/data/schemas/testHello-schema.json
+      test/data/schemas/namaste-schema.json
       test/integration/app-spec.coffee
       test/integration/message-spec.coffee
       test/integration/user-devices-spec.coffee

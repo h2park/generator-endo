@@ -89,6 +89,9 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
     @template "test/_mock-strategy.coffee", "test/mock-strategy.coffee", context
+    @template "test/data/schemas/_testHello-schema.json", "test/data/schemas/testHello-schema.json", context
+    @template "test/data/schemas/_namaste-schema.json", "test/data/schemas/namaste-schema.json", context
+    @template "test/data/schemas/_userRepos-schema.json", "test/data/schemas/userRepos-schema.json", context
     @template "test/integration/_message-spec.coffee", "test/integration/message-spec.coffee", context
     @template "test/integration/_sample-spec.coffee", "test/integration/#{filePrefix}-spec.coffee", context
     @template "test/integration/_user-devices-spec.coffee", "test/integration/user-devices-spec.coffee", context
