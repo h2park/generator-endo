@@ -19,7 +19,7 @@ describe 'Sample Spec', ->
       port: undefined,
       disableLogging: true
       apiStrategy: @apiStrategy
-      deviceType: 'endo-github'
+      deviceType: '<%= appname %>'
       octobluStrategy: @octobluStrategy
       serviceUrl: 'http://octoblu.xxx'
       meshbluConfig:
