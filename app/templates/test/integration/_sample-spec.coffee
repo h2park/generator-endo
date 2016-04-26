@@ -34,10 +34,10 @@ describe 'Sample Spec', ->
     serverOptions =
       logFn: ->
       messageHandlers: {}
+      deviceType: 'endo-app'
       apiStrategy: @apiStrategy
       octobluStrategy: @octobluStrategy
       disableLogging: true
-      deviceType: 'endo-app'
       meshbluConfig:
         server: 'localhost'
         port: 0xd00d
