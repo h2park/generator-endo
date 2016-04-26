@@ -70,7 +70,6 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "_endo-message-schema.json", "endo-message-schema.json", context
     @template "schemas/_hello-schema.json", "schemas/hello-schema.json", context
     @template "schemas/_namaste-schema.json", "schemas/namaste-schema.json", context
-    @template "schemas/_userRepos-schema.json", "schemas/userRepos-schema.json", context
     @template "src/_message-handlers.coffee", "src/message-handlers.coffee", context
     @template "src/_router.coffee", "src/router.coffee", context
     @template "src/_server.coffee", "src/server.coffee", context
@@ -89,9 +88,8 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
     @template "test/_mock-strategy.coffee", "test/mock-strategy.coffee", context
-    @template "test/data/schemas/_testHello-schema.json", "test/data/schemas/testHello-schema.json", context
+    @template "test/data/schemas/_test-hello-schema.json", "test/data/schemas/test-hello-schema.json", context
     @template "test/data/schemas/_namaste-schema.json", "test/data/schemas/namaste-schema.json", context
-    @template "test/data/schemas/_userRepos-schema.json", "test/data/schemas/userRepos-schema.json", context
     @template "test/integration/_message-spec.coffee", "test/integration/message-spec.coffee", context
     @template "test/integration/_sample-spec.coffee", "test/integration/#{filePrefix}-spec.coffee", context
     @template "test/integration/_user-devices-spec.coffee", "test/integration/user-devices-spec.coffee", context
