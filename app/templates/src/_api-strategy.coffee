@@ -17,8 +17,8 @@ class <%= classPrefix %>Strategy extends Passport<%= classPrefix %>
 
   onAuthorization: (accessToken, refreshToken, profile, callback) =>
     callback null, {
-      resourceOwnerID: profile.id
-      resourceOwnerSecrets:
+      id: profile.id
+      credentials:
         secret: accessToken
         refreshToken: refreshToken
     }
