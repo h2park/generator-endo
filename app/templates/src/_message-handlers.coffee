@@ -4,13 +4,13 @@ class MessageHandlers
   constructor: ->
     console.warn 'Implement src/message-handlers.coffee with a function per message type this endo will support'
 
-  userRepos: ({auth, data, endo}, callback) =>
+  userRepos: ({data, encrypted}, callback) =>
     options = {
       headers:
         'User-Agent': 'endo-github'
       auth:
-        username: endo.resourceOwnerID
-        password: endo.resourceOwnerSecrets.secret
+        username: encrypted.id
+        password: encrypted.secrets.credentials.secret
       json: true
     }
     request.get 'https://api.github.com/user/repos', options, (error, response, body) =>
