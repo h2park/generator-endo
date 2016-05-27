@@ -4,7 +4,7 @@ path            = require 'path'
 Endo            = require 'endo-core'
 OctobluStrategy = require 'endo-core/octoblu-strategy'
 ApiStrategy     = require './src/api-strategy'
-MessageHandlers = require './src/message-handlers'
+MessageHandler  = require './src/message-handler'
 SchemaLoader    = require './src/schema-loader'
 
 MISSING_SERVICE_URL = 'Missing required environment variable: ENDO_<%= constantPrefix %>_SERVICE_URL'
@@ -25,7 +25,7 @@ class Command
       deviceType:      '<%= appname %>'
       disableLogging:  process.env.DISABLE_LOGGING == "true"
       meshbluConfig:   meshbluConfig
-      messageHandlers: new MessageHandlers
+      messageHandler:  new MessageHandler
       octobluStrategy: octobluStrategy
       port:            process.env.PORT || 80
       schemas:         schemaLoader.getSchemasSync()
