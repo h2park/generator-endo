@@ -22,11 +22,15 @@ describe 'app', ->
   it 'creates expected files', ->
     assert.file '''
       Dockerfile
-      schemas/hello-schema.json
-      schemas/namaste-schema.json
-      src/message-handlers.coffee
+      src/message-handler.coffee
       src/schema-loader.coffee
       src/api-strategy.coffee
+      src/jobs/get-user-events/action.coffee
+      src/jobs/get-user-events/form.cson
+      src/jobs/get-user-events/index.coffee
+      src/jobs/get-user-events/job.coffee
+      src/jobs/get-user-events/message.cson
+      src/jobs/get-user-events/response.cson
       test/test_helper.coffee
       test/mocha.opts
       command.js
