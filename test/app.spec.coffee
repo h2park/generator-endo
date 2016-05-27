@@ -23,7 +23,6 @@ describe 'app', ->
     assert.file '''
       Dockerfile
       src/message-handler.coffee
-      src/schema-loader.coffee
       src/api-strategy.coffee
       src/jobs/get-user-events/action.coffee
       src/jobs/get-user-events/form.cson

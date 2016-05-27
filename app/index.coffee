@@ -68,7 +68,6 @@ class OctobluServiceGenerator extends yeoman.Base
     }
     @template "_package.json", "package.json", context
     @template "src/_message-handler.coffee", "src/message-handler.coffee", context
-    @template "src/_schema-loader.coffee", "src/schema-loader.coffee", context
     @template "src/_api-strategy.coffee", "src/api-strategy.coffee", context
     @template "src/jobs/get-user-events/_action.coffee", "src/jobs/get-user-events/action.coffee", context
     @template "src/jobs/get-user-events/_form.cson", "src/jobs/get-user-events/form.cson", context

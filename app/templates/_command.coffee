@@ -5,7 +5,6 @@ Endo            = require 'endo-core'
 OctobluStrategy = require 'endo-core/octoblu-strategy'
 ApiStrategy     = require './src/api-strategy'
 MessageHandler  = require './src/message-handler'
-SchemaLoader    = require './src/schema-loader'
 
 MISSING_SERVICE_URL = 'Missing required environment variable: ENDO_<%= constantPrefix %>_SERVICE_URL'
 MISSING_MANAGER_URL = 'Missing required environment variable: ENDO_<%= constantPrefix %>_MANAGER_URL'
@@ -18,7 +17,6 @@ class Command
     meshbluConfig   = new MeshbluConfig().toJSON()
     apiStrategy     = new ApiStrategy process.env
     octobluStrategy = new OctobluStrategy process.env, meshbluConfig
-    schemaLoader    = new SchemaLoader schemaDir: path.join(__dirname, 'schemas')
 
     return {
       apiStrategy:     apiStrategy
@@ -28,7 +26,6 @@ class Command
       messageHandler:  new MessageHandler
       octobluStrategy: octobluStrategy
       port:            process.env.PORT || 80
-      schemas:         schemaLoader.getSchemasSync()
       serviceUrl:      process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
       userDeviceManagerUrl: process.env.ENDO_<%= constantPrefix %>_MANAGER_URL
     }
