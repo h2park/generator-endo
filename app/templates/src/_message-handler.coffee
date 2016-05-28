@@ -17,8 +17,16 @@ class MessageHandlers
       return callback error if error?
       return callback null, _.pick(response, 'data', 'metadata')
 
-  schema: (callback) =>
+  formSchema: (callback) =>
+    callback null, @_formSchemaFromJobs @jobs
+
+  messageSchema: (callback) =>
     callback null, @_messageSchemaFromJobs @jobs
+
+  _formSchemaFromJobs: (jobs) =>
+    return {
+      message: _.mapValues jobs, 'form'
+    }
 
   _generateMetadata: (jobType) =>
     return {
