@@ -13,7 +13,7 @@ class MessageHandlers
     job = @jobs[metadata.jobType]
     return callback null, NOT_FOUND_RESPONSE unless job?
 
-    job.action {data, encrypted, metadata}, (error, response) =>
+    job.action {encrypted}, {data, metadata}, (error, response) =>
       return callback error if error?
       return callback null, _.pick(response, 'data', 'metadata')
 
