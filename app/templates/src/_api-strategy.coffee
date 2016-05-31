@@ -19,9 +19,10 @@ class <%= classPrefix %>Strategy extends Passport<%= classPrefix %>
     callback null, {
       id: profile.id
       username: profile.username
-      credentials:
-        secret: accessToken
-        refreshToken: refreshToken
+      secrets:
+        credentials:
+          secret: accessToken
+          refreshToken: refreshToken
     }
 
 module.exports = <%= classPrefix %>Strategy
