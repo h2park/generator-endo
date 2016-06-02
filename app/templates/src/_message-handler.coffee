@@ -65,12 +65,13 @@ class MessageHandlers
   _messageSchemaFromJob: (job, key) =>
     message = _.cloneDeep job.message
     _.set message, 'x-form-schema.angular', "message.#{key}.angular"
+    _.set message, 'x-response-schema', "#{key}"
     _.set message, 'properties.metadata', @_generateMessageMetadata(key)
     return message
 
   _messageSchemaFromJobs: (jobs) =>
     _.mapValues jobs, @_messageSchemaFromJob
-    
+
   _responseSchemaFromJob: (job) =>
     response = _.cloneDeep job.response
     _.set response, 'properties.metadata', @_generateResponseMetadata()
