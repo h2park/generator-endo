@@ -23,12 +23,15 @@ class MessageHandlers
   messageSchema: (callback) =>
     callback null, @_messageSchemaFromJobs @jobs
 
+  responseSchema: (callback) =>
+    callback null, @_responseSchemaFromJobs @jobs
+
   _formSchemaFromJobs: (jobs) =>
     return {
       message: _.mapValues jobs, 'form'
     }
 
-  _generateMetadata: (jobType) =>
+  _generateMessageMetadata: (jobType) =>
     return {
       type: 'object'
       required: ['jobType']
@@ -37,6 +40,17 @@ class MessageHandlers
           type: 'string'
           enum: [jobType]
           default: jobType
+    }
+
+  _generateResponseMetadata: =>
+    return {
+      type: 'object'
+      required: ['status', 'code']
+      properties:
+        status:
+          type: 'string'
+        code:
+          type: 'integer'
     }
 
   _getJobs: =>
@@ -51,11 +65,20 @@ class MessageHandlers
   _messageSchemaFromJob: (job, key) =>
     message = _.cloneDeep job.message
     _.set message, 'x-form-schema.angular', "message.#{key}.angular"
-    _.set message, 'properties.metadata', @_generateMetadata(key)
+    _.set message, 'properties.metadata', @_generateMessageMetadata(key)
     return message
 
   _messageSchemaFromJobs: (jobs) =>
     _.mapValues jobs, @_messageSchemaFromJob
+    
+  _responseSchemaFromJob: (job) =>
+    response = _.cloneDeep job.response
+    _.set response, 'properties.metadata', @_generateResponseMetadata()
+    return response
+
+  _responseSchemaFromJobs: (jobs) =>
+    _.mapValues jobs, @_responseSchemaFromJob
+
 
 
 module.exports = MessageHandlers
