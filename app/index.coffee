@@ -1,13 +1,11 @@
-util       = require 'util'
 path       = require 'path'
-url        = require 'url'
 htmlWiring = require 'html-wiring'
 yeoman     = require 'yeoman-generator'
 _          = require 'lodash'
 helpers    = require './helpers'
 
 class OctobluServiceGenerator extends yeoman.Base
-  constructor: (args, options, config) ->
+  constructor: (args, options) ->
     super
     @option 'github-user'
     @currentYear = (new Date()).getFullYear()

@@ -1,18 +1,21 @@
-GitHubApi  = require 'github'
-_          = require 'lodash'
+Github = require 'github'
+_      = require 'lodash'
 
 class Helpers
   extractEndoName: (appName) =>
     _.kebabCase appName
 
   githubUserInfo: (user, callback) =>
-    github = new GitHubApi version: '3.0.0'
+    github = new Github
 
     unless _.isEmpty process.env.GITHUB_TOKEN
       github.authenticate
         type: 'oauth'
         token: process.env.GITHUB_TOKEN
-        
-    github.user.getFrom {user}, callback
+
+    console.log 'getting user'
+    github.users.getForUser {user}, (error, user) =>
+      console.log 'got', error, user
+      callback error, user
 
 module.exports = new Helpers
