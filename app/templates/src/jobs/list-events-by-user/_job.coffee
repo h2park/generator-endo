@@ -2,7 +2,7 @@ Github = require 'github'
 http   = require 'http'
 _      = require 'lodash'
 
-class GetUserEvents
+class ListEventsByUser
   constructor: ({@encrypted}) ->
     console.log '@encrypted', JSON.stringify @encrypted
     @github = new Github
@@ -24,13 +24,10 @@ class GetUserEvents
 
   _processResult: (result) =>
     {
+      createdAt:   result.created_at
+      description: result.payload.description
       type:        result.type
       username:    result.actor.display_login
-      repo_name:   result.repo.name
-      commit_ref:  result.payload.ref
-      commit_sha:  result.payload.head
-      created_at:  result.created_at
-      description: result.payload.description
     }
 
   _processResults: (results) =>
@@ -41,4 +38,4 @@ class GetUserEvents
     error.code = code
     return error
 
-module.exports = GetUserEvents
+module.exports = ListEventsByUser

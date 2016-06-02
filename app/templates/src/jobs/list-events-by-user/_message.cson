@@ -1,6 +1,6 @@
 {
   type: 'object'
-  title: 'Get User Events'
+  title: 'List Events by User'
   'x-group-name': 'User Events'
   required: ['metadata', 'data']
   properties:
