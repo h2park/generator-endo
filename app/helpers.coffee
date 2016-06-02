@@ -13,9 +13,7 @@ class Helpers
         type: 'oauth'
         token: process.env.GITHUB_TOKEN
 
-    console.log 'getting user'
     github.users.getForUser {user}, (error, user) =>
-      console.log 'got', error, user
       callback error, user
 
 module.exports = new Helpers
