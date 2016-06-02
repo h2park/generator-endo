@@ -24,12 +24,12 @@ describe 'app', ->
       Dockerfile
       src/message-handler.coffee
       src/api-strategy.coffee
-      src/jobs/get-user-events/action.coffee
-      src/jobs/get-user-events/form.cson
-      src/jobs/get-user-events/index.coffee
-      src/jobs/get-user-events/job.coffee
-      src/jobs/get-user-events/message.cson
-      src/jobs/get-user-events/response.cson
+      src/jobs/list-events-by-user/action.coffee
+      src/jobs/list-events-by-user/form.cson
+      src/jobs/list-events-by-user/index.coffee
+      src/jobs/list-events-by-user/job.coffee
+      src/jobs/list-events-by-user/message.cson
+      src/jobs/list-events-by-user/response.cson
       test/test_helper.coffee
       test/mocha.opts
       command.js

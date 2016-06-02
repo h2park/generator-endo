@@ -67,12 +67,12 @@ class OctobluServiceGenerator extends yeoman.Base
     @template "_package.json", "package.json", context
     @template "src/_message-handler.coffee", "src/message-handler.coffee", context
     @template "src/_api-strategy.coffee", "src/api-strategy.coffee", context
-    @template "src/jobs/get-user-events/_action.coffee", "src/jobs/get-user-events/action.coffee", context
-    @template "src/jobs/get-user-events/_form.cson", "src/jobs/get-user-events/form.cson", context
-    @template "src/jobs/get-user-events/_index.coffee", "src/jobs/get-user-events/index.coffee", context
-    @template "src/jobs/get-user-events/_job.coffee", "src/jobs/get-user-events/job.coffee", context
-    @template "src/jobs/get-user-events/_message.cson", "src/jobs/get-user-events/message.cson", context
-    @template "src/jobs/get-user-events/_response.cson", "src/jobs/get-user-events/response.cson", context
+    @template "src/jobs/list-events-by-user/_action.coffee", "src/jobs/list-events-by-user/action.coffee", context
+    @template "src/jobs/list-events-by-user/_form.cson", "src/jobs/list-events-by-user/form.cson", context
+    @template "src/jobs/list-events-by-user/_index.coffee", "src/jobs/list-events-by-user/index.coffee", context
+    @template "src/jobs/list-events-by-user/_job.coffee", "src/jobs/list-events-by-user/job.coffee", context
+    @template "src/jobs/list-events-by-user/_message.cson", "src/jobs/list-events-by-user/message.cson", context
+    @template "src/jobs/list-events-by-user/_response.cson", "src/jobs/list-events-by-user/response.cson", context
     @template "test/_mocha.opts", "test/mocha.opts", context
     @template "test/_test_helper.coffee", "test/test_helper.coffee", context
     @template "_command.js", "command.js", context

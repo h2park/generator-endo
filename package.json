@@ -1,6 +1,6 @@
 {
   "name": "generator-endo",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "description": "A generator for Yeoman",
   "keywords": [
     "yeoman-generator"
@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "mocha": "^2.5.3",
+    "rimraf": "^2.5.2",
     "yeoman-assert": "^2.2.0",
     "yeoman-test": "^1.4.0"
   },
