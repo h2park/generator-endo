@@ -46,7 +46,6 @@ The credentials management portion of an Endo Service has N  goals:
 * Make it safe to transfer ownership of a device with API access without revealing any credentials.
 * To allow anyone with the ability to authenticate as the API user to revoke access from any devices that authenticated previously.
 
-
 ### Storing API Credentials
 
 The user account information is encrypted using the Endo Service's private key, and then stored on a `credentials device` that only the Endo Service has permission to discover.
@@ -57,10 +56,44 @@ There are cases in which the API credentials may need to be updated. For example
 
 If a user can prove to the Endo Service that they have control over the user account the credentials device points to (generally by redoing the oauth process), they may overwrite the credentials with new credentials.
 
-<!-- ## Receiving incoming Meshblu messages. -->
-<!-- ## Mapping messages to API calls. -->
-<!-- ## Mapping API call results to a response -->
-<!-- ## Responding via Meshblu -->
+#### Revoking API Access
+
+After the user has proven to the Endo Service that they have control over the user account the credentials device points to, they will be given:
+
+* The ability to list all `user devices` that currently have the ability to consume the API.
+* The ability to revoke access from any of those `user devices`.
+* The ability to create additional `user devices` with access.
+
+## Receiving incoming Meshblu messages.
+
+A consumer of the API should not need to be aware of the existence of the `credentials device`. Instead, they use the `user device` to interact with the API. The `credentials device` has a `message.received` subscription to the `user device`, which lets it intercept messages sent to the `user device`. On receiving an intercepted message, it forwards the message into the Endo Service via a webhook. The Endo Service can then access and decrypt the credentials from the `credentials device` map the message to an API call.
+
+## Mapping messages to API calls.
+
+The Endo Service translates the incoming message into a valid API request. We recommend that the actual execution of the API request be handled by a third party NPM module if one is available. For example, out [octoblu/endo-github](https://github.com/octoblu/endo-github) service uses the [Github NPM module](https://www.npmjs.com/package/github).
+
+## Mapping API call results to a response
+
+After the Endo Service receives the result of the API call, it should format a response to send back to the client. We recommend limiting the amount of data included in the response to the bare minimum required to be useful, and only adding to it after actual users request the data. It is strongly discouraged to pass the API result object directly back as the response data without at least whitelisting the properties it sends back.
+
+For example, a list-events-by-user call to the Github API may result in an event object that contains a username that performed the event, an event type, dozens of URLs that can be accessed to find more information about the event, as well as other miscellaneous data. In our implementation, we limit the response properties to just the handful that are critical to be useful, give them more expressive names, and flatten them into a simpler data structure.
+
+```coffee
+processResults: (results)=>
+  _.map results, (result) =>
+    {
+      createdAt:   result.created_at
+      description: result.payload.description
+      type:        result.type
+      username:    result.actor.display_login
+    }
+```
+
+## Responding via Meshblu
+
+After the mapping is complete, the Endo Service should respond to the device that originally sent the message. Usually, the message comes from a `flow` device to a `user device` and is intercepted by the `credentials device`. The `flow` will not know about the existance of the `credentials device`, and will generally not allow the `credentials device` to send it messages. To address this, the `user device` has the `credentials device` in its `message.as` whitelist.
+
+So, to send a meshblu response, the `credentials device` will send the `flow` a direct message as the `user device`.
 
 # Creating a Channel
 
