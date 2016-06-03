@@ -6,15 +6,16 @@
 
 A generator for [Yeoman](http://yeoman.io).
 
-## Creating a Channel
 
-### Install yo and the generator
+# Creating a Channel
+
+## Install yo and the generator
 
 ```shell
 npm install -g yo generator-endo
 ```
 
-### Create a new project and run the generator
+## Create a new project and run the generator
 
 Note that the project directory name must start with `endo-`
 
@@ -24,7 +25,7 @@ cd endo-github
 yo endo
 ```
 
-### Modify the passport configuration
+## Modify the passport configuration
 
 The passport configuration is available in `src/api-strategy`. It's purpose is to map the API oauth profile to some required endo values in the `onAuthorization` function.
 
@@ -33,7 +34,7 @@ The callback passed in to the `onAuthorization` function expects a user object a
 The properties listed are all required. However, the developer can add whatever additional properties they'd like. Keep in mind that every attribute that is not under the `secrets` key may be made available users authenticated by the API. In other words, if a user uses Oauth to authenicate the endo service as Twitter user @sqrtofsaturn, they may get access to all of the properties in the user object that are not under the `secrets` key.
 
 
-##### User Required Properties
+### User Required Properties
 
 * `id`  The unique identifier that the API uses to identify this user. Is often an integer value.
 * `username`  The visual identifier that the user would recognize as their username. It is used as the name of the device created for the user.
@@ -56,11 +57,11 @@ onAuthorization: (accessToken, refreshToken, profile, callback) =>
   }
 ```
 
-### Create a job
+## Create a job
 
 Jobs are stored in src/jobs. When the service first comes online, it will crawl through the src/jobs directory and generate a directory for each job that it finds. This generator will create one demo job for you. However, unless you're creating a Github Endo, the example will not be very useful.
 
-#### Job directory format
+### Job directory format
 
 ```
 src/
@@ -74,27 +75,86 @@ src/
 │   │   └── response.cson
 ```
 
-##### list-events-by-user (Job directory)
+#### list-events-by-user (Job directory)
 
 The directory name will titleized be used as the job type identifier. For example, `list-events-by-user` will become the job type `ListEventsByUser`. The job will be executed by the message handler for incoming messages with a `metadata.jobType` that matches the job type identifier generated.
 
-##### action.coffee
+#### action.coffee
 
 `action.coffee` exports a function that will be called for matching messages with the device options and the message, along with a callback that must be called to respond to the requester. The purpose of `action.coffee` is to map the function call API of the message handler to the Object Oriented API of the job. This file does not generally need to be modified.
 
-##### index.coffee
+#### index.coffee
 
 `index.coffee` exports the functions and schema that make up the job in a standard structure. This file does not generally need to be modified.
 
-##### job.coffee
+#### job.coffee
 
-`job.coffee` defines the job.
+`job.coffee` is responsible for 4 things:
 
-##### form.cson
+1. Take the incoming request message and decrypted secrets and maps them to an API call.
+2. Make the API call.
+3. Map the API response to the job's response schema.
+4. Respond to the message by calling the `callback` with either an error or a properly formatted response.
+
+##### type Job
+
+```coffee
+new Job({
+  # encrypted portion of the credentials device, decrypted
+  encrypted:
+    # Anything in secrets should never be returned as a result of a message.
+    secrets:
+      # The API credentials needed to make a request.
+      credentials:
+        # The token used to make API requests.
+        token: "abcd1234"
+        # The token used to generate a new `secret` when it expires.
+        refreshToken:  "abcd1234"
+})
+```
+
+##### function job.do
+
+```coffee
+job.do({data}, callback)
+```
+
+`data` should have the structure defined in `message.cson`. Combined with the `credentials` from the Job constructor, it will provide all the information needed to perform the API request.
+
+
+The `callback` passed in to the `do` functions expects to be called with either an `error` as its first argument, or with `null` as its first argument and a response as the second.
+
+The `error` object may optionally have a `code` property, which will be sent back to the user. Endo Services use the same codes and status as HTTP, which are defined at [httpstatus.es](http://httpstatus.es). If a `code` is not defined, the it will default to a `500`, which translates to `Internal Server Error`. The helper method `job._userError(code, message)` is available to generate an error with a code.
+
+```coffee
+error = new Error("I'm a Teapot")
+error.code = 418
+callback(error)
+
+# Using the helper method
+callback(@_userError(418, "I'm a Teapot"))
+```
+
+If the `error` object is null, a `response` object is expected. The `response` object should validate against the complete responseSchema, including the `metadata`.
+
+```coffee
+callback(null, {
+  metadata:
+    code: 201
+    status: http.STATUS_CODES[201]
+  data:
+    username: 'sqrtofsaturn'
+    id: 1234
+})
+```
+
+It is recommended that developers use existing NPM modules to interface with the target API. For example, the generated `job.coffee` uses the [github npm module](https://www.npmjs.com/package/github) to retrieve the events list instead of manually creating an HTTP request.
+
+#### form.cson
 
 `from.cson` defines how the form will be displayed to the user. Multiple form schemas can be defined for different message schema editors. It is recommended to nest the form schema under a key to target a specific form schema editor to make it easier to add support for additional editors in the future. The Octoblu Designer uses [Angular Schema Form](http://schemaform.io/) and the message handler expects the form schema to be nested under the `angular` key.
 
-##### message.cson
+#### message.cson
 
 `message.cson` defines the format all incoming messages must have in order to be processed by the job. Currently, messages that do not match the schema will still be allowed through to the Job, but that will likely change in the near future. A few additional properties will automatically be merged in to the message schema by the message handler before it's made available outside the Endo Service.
 
@@ -155,7 +215,7 @@ Will end up like this:
 }
 ```
 
-##### response.cson
+#### response.cson
 
 `response.cson` defines the format of the response messages from the Endo Service. Currently, the response schema isn't used for anything. However, we have big plans for this little guy, so don't leave him out! A few additional properties will automatically be merged in to the response schema by the message handler before it's made available outside the Endo Service.
 
