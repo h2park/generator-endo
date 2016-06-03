@@ -4,8 +4,63 @@
 [![devDependency Status](http://img.shields.io/david/dev/octoblu/generator-endo.svg?style=flat)](https://david-dm.org/octoblu/generator-endo#info=devDependencies)
 [![Build Status](http://img.shields.io/travis/octoblu/generator-endo.svg?style=flat&branch=master)](https://travis-ci.org/octoblu/generator-endo)
 
-A generator for [Yeoman](http://yeoman.io).
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**
 
+- [Endo Service](#endo-service)
+  - [Managing API credentials](#managing-api-credentials)
+    - [Storing API Credentials](#storing-api-credentials)
+      - [Updating API Credentials](#updating-api-credentials)
+- [Creating a Channel](#creating-a-channel)
+  - [Install yo and the generator](#install-yo-and-the-generator)
+  - [Create a new project and run the generator](#create-a-new-project-and-run-the-generator)
+  - [Modify the passport configuration](#modify-the-passport-configuration)
+    - [User Required Properties](#user-required-properties)
+        - [Example](#example)
+  - [Create a job](#create-a-job)
+    - [Job directory format](#job-directory-format)
+      - [list-events-by-user (Job directory)](#list-events-by-user-job-directory)
+      - [action.coffee](#actioncoffee)
+      - [index.coffee](#indexcoffee)
+      - [job.coffee](#jobcoffee)
+        - [type Job](#type-job)
+        - [function job.do](#function-jobdo)
+      - [form.cson](#formcson)
+      - [message.cson](#messagecson)
+      - [response.cson](#responsecson)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# Endo Service
+
+Before creating an Endo Service, it helps to understand the role it plays in mediating the management of API credentials, mapping incoming Meshblu messages to API calls, and mapping the results to a Meshblu response message.
+
+## Managing API credentials
+
+The credentials management portion of an Endo Service has N  goals:
+
+* Store API credentials so they may be retrieved by the service to make API calls.
+* Allow multiple Octoblu Users and Meshblu Devices to share the same set of credentials.
+* Use Meshblu's whitelists to manage who has access to consume the API.
+* Make it safe to transfer ownership of a device with API access without revealing any credentials.
+* To allow anyone with the ability to authenticate as the API user to revoke access from any devices that authenticated previously.
+
+
+### Storing API Credentials
+
+The user account information is encrypted using the Endo Service's private key, and then stored on a `credentials device` that only the Endo Service has permission to discover.
+
+#### Updating API Credentials
+
+There are cases in which the API credentials may need to be updated. For example, a user reauthenticate with the API, generating a new access token and revoking the previous token.
+
+If a user can prove to the Endo Service that they have control over the user account the credentials device points to (generally by redoing the oauth process), they may overwrite the credentials with new credentials.
+
+<!-- ## Receiving incoming Meshblu messages. -->
+<!-- ## Mapping messages to API calls. -->
+<!-- ## Mapping API call results to a response -->
+<!-- ## Responding via Meshblu -->
 
 # Creating a Channel
 
