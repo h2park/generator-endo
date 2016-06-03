@@ -98,9 +98,9 @@ The directory name will titleized be used as the job type identifier. For exampl
 
 `message.cson` defines the format all incoming messages must have in order to be processed by the job. Currently, messages that do not match the schema will still be allowed through to the Job, but that will likely change in the near future. A few additional properties will automatically be merged in to the message schema by the message handler before it's made available outside the Endo Service.
 
-* `x-form-schema.angular`
-* `x-response-schema`
-* `properties.metadata`
+* `x-form-schema.angular` Will point the form schema at the key `message.{MessageType}.angular`
+* `x-response-schema` Will point the response schema to `{MessageType}`
+* `properties.metadata` Will add `properties.metadata.jobType` as a required field that accepts only the MessageType name.
 
 There is an additional property, `x-group-name`, that can be set to indicate which group a job belongs to. This is used in the Octoblu Designer's message type drop down to group different message types.
 
@@ -156,3 +156,49 @@ Will end up like this:
 ```
 
 ##### response.cson
+
+`response.cson` defines the format of the response messages from the Endo Service. Currently, the response schema isn't used for anything. However, we have big plans for this little guy, so don't leave him out! A few additional properties will automatically be merged in to the response schema by the message handler before it's made available outside the Endo Service.
+
+* `properties.metadata` Defines the the status and code of the response.
+
+So a response schema for a job `list-events-by-user` that looks like this:
+
+```coffee
+{
+  type: 'object'
+  required: ['metadata', 'data']
+  properties:
+    data:
+      type: 'object'
+      required: ['username']
+      properties:
+        username:
+          type: 'string'
+          description: 'The github username that performed the event. (ex: "sqrtofsaturn")'
+}
+```
+
+Will end up like this:
+
+```coffee
+{
+  type: 'object'
+  required: ['metadata', 'data']
+  properties:
+    metadata:
+      type: 'object'
+      required: ['status', 'code']
+      properties:
+        status:
+          type: 'string'
+        code:
+          type: 'integer'
+    data:
+      type: 'object'
+      required: ['username']
+      properties:
+        username:
+          type: 'string'
+          description: 'The github username that performed the event. (ex: "sqrtofsaturn")'
+}
+```
