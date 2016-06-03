@@ -100,6 +100,59 @@ The directory name will titleized be used as the job type identifier. For exampl
 
 * `x-form-schema.angular`
 * `x-response-schema`
-* `properties.metadata.jobTypes`
+* `properties.metadata`
+
+There is an additional property, `x-group-name`, that can be set to indicate which group a job belongs to. This is used in the Octoblu Designer's message type drop down to group different message types.
+
+So a message schema for a job `list-events-by-user` that looks like this:
+
+```coffee
+{
+  type: 'object'
+  title: 'List Events by User'
+  'x-group-name': 'User Events'
+  required: ['metadata', 'data']
+  properties:
+    data:
+      type: 'object'
+      required: ['username']
+      properties:
+        username:
+          type: 'string'
+          title: 'Username'
+          description: 'Github username or organization name'
+}
+```
+
+Will end up like this:
+
+```coffee
+{
+  type: 'object'
+  title: 'List Events by User'
+  'x-form-schema':
+    angular: 'message.ListEventsByUser.angular'
+  'x-group-name': 'User Events'
+  'x-response-schema': 'ListEventsByUser'
+  required: ['metadata', 'data']
+  properties:
+    metadata:
+      type: 'object'
+      required: ['jobType']
+      properties:
+        jobType:
+          type: 'string'
+          enum: ['ListEventsByUser']
+          default: 'ListEventsByUser'
+    data:
+      type: 'object'
+      required: ['username']
+      properties:
+        username:
+          type: 'string'
+          title: 'Username'
+          description: 'Github username or organization name'
+}
+```
 
 ##### response.cson
