@@ -40,6 +40,7 @@ class MessageHandlers
           type: 'string'
           enum: [jobType]
           default: jobType
+        respondTo: {}
     }
 
   _generateResponseMetadata: =>
@@ -67,6 +68,7 @@ class MessageHandlers
     _.set message, 'x-form-schema.angular', "message.#{key}.angular"
     _.set message, 'x-response-schema', "#{key}"
     _.set message, 'properties.metadata', @_generateMessageMetadata(key)
+    message.required = _.union ['metadata'], message.required
     return message
 
   _messageSchemaFromJobs: (jobs) =>
@@ -79,7 +81,6 @@ class MessageHandlers
 
   _responseSchemaFromJobs: (jobs) =>
     _.mapValues jobs, @_responseSchemaFromJob
-
 
 
 module.exports = MessageHandlers
