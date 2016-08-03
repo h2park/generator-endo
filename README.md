@@ -100,7 +100,7 @@ After the mapping is complete, the Endo Service should respond to the device tha
 
 So, to send a meshblu response, the `credentials device` will send the `flow` a direct message as the `user device`.
 
-# Creating a Channel
+# Creating an Endo
 
 ## Install yo and the generator
 
@@ -118,6 +118,12 @@ cd endo-github
 yo endo
 ```
 
+## Setting up the Oauth Device with Octoblu
+
+An Oauth device must be [registered with Octoblu](https://app.octoblu.com/node-wizard/add/551478c1537bdd6e20c9c608). After the device has been created, use the `Credentials: generate` (and download) link to pull down a `meshblu.json`. Save that `meshblu.json` to the root of your endo directory (This file should not be checked in, and has been added to the project's `.gitignore`)
+
+Use [endo-doctor](https://github.com/octoblu/endo-doctor) to finish configuring the device.
+
 ## Modify the passport configuration
 
 The passport configuration is available in `src/api-strategy`. It's purpose is to map the API oauth profile to some required endo values in the `onAuthorization` function.
@@ -126,6 +132,7 @@ The callback passed in to the `onAuthorization` function expects a user object a
 
 The properties listed are all required. However, the developer can add whatever additional properties they'd like. Keep in mind that every attribute that is not under the `secrets` key may be made available users authenticated by the API. In other words, if a user uses Oauth to authenicate the endo service as Twitter user @sqrtofsaturn, they may get access to all of the properties in the user object that are not under the `secrets` key.
 
+If you wish to have an API that doesn't require authentication, we recommend using [passport-endo-passthru](https://github.com/octoblu/passport-endo-passthru). It will use the user's Meshblu UUID to identify the `Credentials Device`.
 
 ### User Required Properties
 
