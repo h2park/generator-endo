@@ -33,6 +33,7 @@ class Command
       appOctobluHost:  process.env.APP_OCTOBLU_HOST
       serviceUrl:      process.env.ENDO_<%= constantPrefix %>_SERVICE_URL
       userDeviceManagerUrl: process.env.ENDO_<%= constantPrefix %>_MANAGER_URL
+      staticSchemasPath: process.env.ENDO_<%= constantPrefix %>_STATIC_SCHEMAS_PATH
     }
 
   run: =>
