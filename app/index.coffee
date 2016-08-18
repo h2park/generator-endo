@@ -65,7 +65,6 @@ class OctobluServiceGenerator extends yeoman.Base
       constantPrefix
     }
     @template "_package.json", "package.json", context
-    @template "src/_message-handler.coffee", "src/message-handler.coffee", context
     @template "src/_api-strategy.coffee", "src/api-strategy.coffee", context
     @template "src/jobs/list-events-by-user/_action.coffee", "src/jobs/list-events-by-user/action.coffee", context
     @template "src/jobs/list-events-by-user/_form.cson", "src/jobs/list-events-by-user/form.cson", context

@@ -1,6 +1,6 @@
 {
   "name": "generator-endo",
-  "version": "5.5.1",
+  "version": "6.0.0",
   "description": "A generator for Yeoman",
   "keywords": [
     "yeoman-generator"

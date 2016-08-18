@@ -24,7 +24,6 @@ describe 'app', ->
   it 'creates expected files', ->
     assert.file '''
       Dockerfile
-      src/message-handler.coffee
       src/api-strategy.coffee
       src/jobs/list-events-by-user/action.coffee
       src/jobs/list-events-by-user/form.cson
