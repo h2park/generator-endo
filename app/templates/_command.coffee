@@ -24,7 +24,7 @@ class Command
 
     return {
       apiStrategy:     apiStrategy
-      deviceType:      '<%= appname %>'
+      deviceType:      '<%= deviceType %>'
       disableLogging:  process.env.DISABLE_LOGGING == "true"
       meshbluConfig:   meshbluConfig
       messageHandler:  new MessageHandler {jobsPath}
