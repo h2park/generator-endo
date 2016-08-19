@@ -54,7 +54,7 @@ class OctobluServiceGenerator extends yeoman.Base
     instancePrefix = _.camelCase @noEndo
     classPrefix    = _.upperFirst instancePrefix
     constantPrefix = _.toUpper _.snakeCase @noEndo
-    deviceType     = "endo:#{instancePrefix}"
+    deviceType     = "endo:#{@noEndo}"
 
     context = {
       @githubUrl
